@@ -30,8 +30,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2019071811;
-$plugin->requires = 2013051400; // Requires this Moodle 2.5 version
+$plugin->version = 2024031261;
+$plugin->requires = 2013111811.01; // Requires this Moodle 2.6 version
 $plugin->maturity = MATURITY_STABLE;
 $plugin->cron = 0;
 $plugin->component = 'mod_clickmeeting';
