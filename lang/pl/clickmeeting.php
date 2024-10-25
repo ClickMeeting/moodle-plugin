@@ -75,3 +75,7 @@ $string['clickmeeting:addinstance'] = 'Dodawanie';
 $string['clickmeeting:host'] = 'Organizator';
 $string['clickmeeting:listener'] = 'Uczestnik';
 $string['clickmeeting:presenter'] = 'Prezenter';
+
+$string['startdate_booked'] = 'Nie można utworzyć konferencji dla tej daty';
+$string['update_error'] = 'Błąd przy aktualizacji wpisu';
+$string['api_404_error'] = '404 Not Found';

@@ -321,8 +321,7 @@ function clickmeeting_add_instance(stdClass $clickmeeting, mod_clickmeeting_mod_
     $clickmeeting->user_id = $USER->id;
 
     if (!clickmeeting_check_conference_availability($clickmeeting->start_time, $clickmeeting->duration)) {
-        print_error('This start date is already booked', '', course_get_url($COURSE, $cw->section));
-        return false;
+        throw new \moodle_exception('startdate_booked', 'clickmeeting');
     }
 
     $transaction = $DB->start_delegated_transaction();
@@ -351,7 +350,7 @@ function clickmeeting_add_instance(stdClass $clickmeeting, mod_clickmeeting_mod_
             foreach ($r['errors'] as $err) {
                 $error .= $err['message'].'<br />';
             }
-            print_error($error, '', course_get_url($COURSE, $cw->section));
+            throw new \moodle_exception($error, 'error');
         }
 
         if (isset($r['room'])) {
@@ -397,18 +396,15 @@ function clickmeeting_update_instance(stdClass $clickmeeting, mod_clickmeeting_m
     $conference = $DB->get_record('clickmeeting_conferences', array('clickmeeting_id' => $clickmeeting->id));
 
     if (!clickmeeting_check_conference_availability($clickmeeting->start_time, $clickmeeting->duration, $conference->conference_id)) {
-        print_error('This start date is already booked', '', course_get_url($COURSE, $cw->section));
-        return false;
+        throw new \moodle_exception('startdate_booked', 'clickmeeting');
     }
 
     if (!$DB->update_record('clickmeeting', $clickmeeting)) {
-        print_error('Error updating record', '', course_get_url($COURSE, $cw->section));
-        return false;
+        throw new \moodle_exception('update_error', 'clickmeeting');
     }
 
     $params['name'] = $clickmeeting->name;
     $params['room_type'] = $clickmeeting->room_type;
-    $params['lobby_description'] = $clickmeeting->lobby_msg;
     $params['duration'] = $clickmeeting->duration;
     $params['permanent_room'] = '0';
     $params['access_type'] = $clickmeeting->access_type;
@@ -436,8 +432,7 @@ function clickmeeting_update_instance(stdClass $clickmeeting, mod_clickmeeting_m
         foreach ($r['errors'] as $err) {
             $error .= $err['message'].'<br />';
         }
-        print_error($error, '', course_get_url($COURSE, $cw->section));
-        return false;
+        throw new \moodle_exception($error, 'error');
     }
 
     $transaction->allow_commit();
@@ -476,8 +471,7 @@ function clickmeeting_delete_instance($id)
     if ('"200 OK"' != $apiresult) {
         // jezeli nie znajdujemy conferencji w clickmeetingu to nie trzeba jej tam usuwac
         if ('"404 Not Found"' == $apiresult) {
-            print_error($apiresult);
-            return false;
+            throw new \moodle_exception('api_404_error', 'clickmeeting');
         }
     }
 
