@@ -21,7 +21,7 @@
  *
  * @package    mod
  * @subpackage clickmeeting
- * @copyright  2013 Your Name <your@email.adress>
+ * @copyright  2024 Clickmeeting
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
