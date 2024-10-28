@@ -58,6 +58,16 @@ $CLICKMEETING_OWNER_ID = $clickmeeting->user_id;
 
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
+if (is_siteadmin()) {
+    $role = 'host'; // host
+} elseif (has_capability('mod/clickmeeting:host', $context)) {
+    //if(has_capability('mod/clickmeeting:host', $context)) {
+    $role = 'host';
+} elseif (has_capability('mod/clickmeeting:presenter', $context)) {
+    $role = 'presenter';
+} elseif (has_capability('mod/clickmeeting:listener', $context)) {
+    $role = 'listener';
+}
 
 /// Print the page header
 
@@ -66,10 +76,6 @@ $PAGE->set_title(format_string($clickmeeting->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
-// other things you may want to set - remove if not needed
-//$PAGE->set_cacheable(false);
-//$PAGE->set_focuscontrol('some-html-id');
-//$PAGE->add_body_class('clickmeeting-'.$somevar);
 
 //// GENERUJEMY TOKEN DLA USER-a
 $token = $DB->get_field('clickmeeting_tokens', 'token', array('user_id' => $USER->id, 'conference_id' => $clickmeeting_conference->conference_id));
