@@ -1,26 +1,26 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/clickmeeting/db" VERSION="20181010" COMMENT="XMLDB file for Moodle mod/clickmeeting"
+<XMLDB PATH="mod/clickmeeting/db" VERSION="20241028" COMMENT="XMLDB file for Moodle mod/clickmeeting"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="clickmeeting" COMMENT="Clickmeeting stuff" NEXT="clickmeeting_conferences">
+    <TABLE NAME="clickmeeting" COMMENT="Clickmeeting stuff">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="course"/>
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="Course clickmeeting activity belongs to" PREVIOUS="id" NEXT="name"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for conference name" PREVIOUS="course" NEXT="description"/>
-        <FIELD NAME="description" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="" PREVIOUS="name" NEXT="user_id"/>
-        <FIELD NAME="user_id" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="" PREVIOUS="description" NEXT="lobby_msg"/>
-        <FIELD NAME="lobby_msg" TYPE="text" LENGTH="big" NOTNULL="false" SEQUENCE="false" COMMENT="" PREVIOUS="user_id" NEXT="start_time"/>
-        <FIELD NAME="start_time" TYPE="datetime" NOTNULL="false" SEQUENCE="false" COMMENT="" PREVIOUS="lobby_msg" NEXT="timestart"/>
-        <FIELD NAME="timestart" SEQUENCE="false" TYPE="int" LENGTH="12" NOTNULL="false" PREVIOUS="start_time" NEXT="duration"/>
-        <FIELD NAME="duration" SEQUENCE="false" TYPE="int" LENGTH="10" NOTNULL="false" PREVIOUS="timestart" NEXT="room_type"/>
-        <FIELD NAME="room_type" TYPE="text" LENGTH="medium" NOTNULL="false" PREVIOUS="duration" NEXT="intro"/>
-        <FIELD NAME="access_type" TYPE="text" LENGTH="medium" NOTNULL="false" PREVIOUS="room_type" NEXT="intro"/>
-        <FIELD NAME="intro" TYPE="text" LENGTH="medium" NOTNULL="false" SEQUENCE="false" ENUM="false" COMMENT="General introduction of the kasa activity" PREVIOUS="name" NEXT="introformat"/>
-        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)" PREVIOUS="intro" NEXT="timecreated"/>
-        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="introformat" NEXT="timemodified"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" DEFAULT="0" SEQUENCE="false" ENUM="false" PREVIOUS="timecreated"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Course clickmeeting activity belongs to"/>
+        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="name field for conference name"/>
+        <FIELD NAME="description" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="user_id" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="lobby_msg" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="start_time" TYPE="datetime" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="timestart" TYPE="int" LENGTH="12" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="duration" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="room_type" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="access_type" TYPE="text" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="General introduction of the kasa activity"/>
+        <FIELD NAME="introformat" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Format of the intro field (MOODLE, HTML, MARKDOWN...)"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
@@ -29,28 +29,28 @@
         <INDEX NAME="course" UNIQUE="false" FIELDS="course"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="clickmeeting_conferences" COMMENT="Clickmeeting conferences stuff" PREVIOUS="clickmeeting">
+    <TABLE NAME="clickmeeting_conferences" COMMENT="Clickmeeting conferences stuff">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="clickmeeting_id"/>
-        <FIELD NAME="clickmeeting_id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="" PREVIOUS="id" NEXT="conference_id"/>
-        <FIELD NAME="conference_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="" PREVIOUS="clickmeeting_id" NEXT="room_url"/>
-        <FIELD NAME="room_url" TYPE="char" LENGTH="512" NOTNULL="false" SEQUENCE="false" COMMENT="" PREVIOUS="conference_id" NEXT="embed_room"/>
-        <FIELD NAME="embed_room" TYPE="char" LENGTH="512" NOTNULL="false" SEQUENCE="false" COMMENT="" PREVIOUS="room_url" NEXT="room_pin"/>
-        <FIELD NAME="room_pin" TYPE="int" LENGTH="10" SEQUENCE="false" NOTNULL="false" COMMENT="" PREVIOUS="embed_room" NEXT="password"/>
-        <FIELD NAME="password" TYPE="char" LENGTH="512" SEQUENCE="false" NOTNULL="false" COMMENT="" PREVIOUS="room_pin"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="clickmeeting_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="conference_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="room_url" TYPE="char" LENGTH="512" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="embed_room" TYPE="char" LENGTH="512" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="room_pin" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="password" TYPE="char" LENGTH="512" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="clickmeeting_tokens" COMMENT="Clickmeeting tokens" PREVIOUS="clickmeeting_conferences">
+    <TABLE NAME="clickmeeting_tokens" COMMENT="Clickmeeting tokens">
       <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" UNSIGNED="true" SEQUENCE="true" NEXT="clickmeeting_id"/>
-        <FIELD NAME="clickmeeting_id" TYPE="int" LENGTH="12" NOTNULL="true" UNSIGNED="true" SEQUENCE="false" COMMENT="" PREVIOUS="id" NEXT="conference_id"/>
-        <FIELD NAME="conference_id" TYPE="int" LENGTH="12" NOTNULL="true" SEQUENCE="false" COMMENT="" PREVIOUS="clickmeeting_id" NEXT="role"/>
-        <FIELD NAME="role" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="" PREVIOUS="conference_id" NEXT="user_id"/>
-        <FIELD NAME="user_id" TYPE="int" LENGTH="12" NOTNULL="false" SEQUENCE="false" COMMENT="" PREVIOUS="role" NEXT="token"/>
-        <FIELD NAME="token" TYPE="char" LENGTH="64" SEQUENCE="false" NOTNULL="false" COMMENT="" PREVIOUS="user_id"/>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="clickmeeting_id" TYPE="int" LENGTH="12" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="conference_id" TYPE="int" LENGTH="12" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="role" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="user_id" TYPE="int" LENGTH="12" NOTNULL="false" SEQUENCE="false"/>
+        <FIELD NAME="token" TYPE="char" LENGTH="64" NOTNULL="false" SEQUENCE="false"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
