@@ -73,7 +73,7 @@ function clickmeeting_get_random_string($length = 6)
 /**
  * @param string $startTime
  * @param int duration
- * @return array
+ * @return boolean
  */
 function clickmeeting_check_conference_availability($startTime, $duration, $id = 0)
 {
@@ -90,13 +90,10 @@ function clickmeeting_check_conference_availability($startTime, $duration, $id =
         'id' => $id,
     ];
 
-    $curlhandle = clickmeeting_init_curl();
-    curl_setopt($curlhandle, CURLOPT_URL, $apiurl.'conference/availability');
-    curl_setopt($curlhandle, CURLOPT_POST, 1);
-    curl_setopt($curlhandle, CURLOPT_POSTFIELDS, $params);
-    curl_exec($curlhandle);
+    $curl = clickmeeting_init_curl();
+    $curl->post($apiurl.'conference/availability', $params);
 
-    return 200 === curl_getinfo($curlhandle, CURLINFO_HTTP_CODE);
+    return 200 === $curl->get_info()['http_code'];
 }
 
 /**
@@ -129,12 +126,9 @@ function clickmeeting_add_conference($params)
     $apiurl = get_config('clickmeeting', 'apiurl');
 
     $curlhandle = clickmeeting_init_curl();
-    curl_setopt($curlhandle, CURLOPT_URL, $apiurl.'conferences');
-    curl_setopt($curlhandle, CURLOPT_POST, 1);//przesylamy metodą post
-    curl_setopt($curlhandle, CURLOPT_POSTFIELDS, $params); //dane do wyslania
-    $r = curl_exec($curlhandle);
+    $result = $curlhandle->post($apiurl.'conferences', $params);
 
-    return $r;
+    return $result;
 }
 
 /**
@@ -149,13 +143,9 @@ function clickmeeting_edit_conference($conferenceid, $params)
     $apiurl = get_config('clickmeeting', 'apiurl');
 
     $curlhandle = clickmeeting_init_curl();
-    curl_setopt($curlhandle, CURLOPT_URL, $apiurl.'conferences/'.$conferenceid);
-    curl_setopt($curlhandle, CURLOPT_CUSTOMREQUEST, 'PUT');
-    curl_setopt($curlhandle, CURLOPT_POSTFIELDS, http_build_query($params, '', '&'));
+    $result = $curlhandle->put($apiurl.'conferences/'.$conferenceid, [], ['CURLOPT_POSTFIELDS' => http_build_query($params, '', '&')]);
 
-    $r = curl_exec($curlhandle);
-
-    return $r;
+    return $result;
 }
 
 /**
@@ -174,13 +164,9 @@ function clickmeeting_edit_conference_title($conferenceid, $title)
     );
 
     $curlhandle = clickmeeting_init_curl();
-    curl_setopt($curlhandle, CURLOPT_URL, $apiurl.'conferences/'.$conferenceid);
-    curl_setopt($curlhandle, CURLOPT_CUSTOMREQUEST, 'PUT');
-    curl_setopt($curlhandle, CURLOPT_POSTFIELDS, http_build_query($params, '', '&'));
+    $result = $curlhandle->put($apiurl.'conferences/'.$conferenceid, [], ['CURLOPT_POSTFIELDS' => http_build_query($params, '', '&')]);
 
-    $r = curl_exec($curlhandle);
-
-    return $r;
+    return $result;
 }
 
 /**
@@ -194,12 +180,9 @@ function clickmeeting_delete_conference($conferenceid)
     $apiurl = get_config('clickmeeting', 'apiurl');
 
     $curlhandle = clickmeeting_init_curl();
-    curl_setopt($curlhandle, CURLOPT_URL, $apiurl.'conferences/'.$conferenceid);
-    curl_setopt($curlhandle, CURLOPT_CUSTOMREQUEST, 'DELETE');
+    $result = $curlhandle->delete($apiurl.'conferences/'.$conferenceid);
 
-    $r = curl_exec($curlhandle);
-
-    return $r;
+    return $result;
 }
 
 
@@ -218,12 +201,8 @@ function clickmeeting_generate_token($roomId)
     $params['how_many'] = 1;
 
     $curlhandle = clickmeeting_init_curl();
-    curl_setopt($curlhandle, CURLOPT_URL, $apiurl.'conferences/'.$roomId.'/tokens');
-    curl_setopt($curlhandle, CURLOPT_POST, 1);
-    curl_setopt($curlhandle, CURLOPT_POSTFIELDS, $params);
-    $r = curl_exec($curlhandle);
-
-    $decoder = json_decode($r, true);
+    $result = $curlhandle->post($apiurl.'conferences/'.$roomId.'/tokens', $params);
+    $decoder = json_decode($result, true);
 
     return $decoder['access_tokens'][0]['token'];
 }
@@ -263,11 +242,8 @@ function clickmeeting_get_login_url($roomId, $email, $nickname, $role, $auth, $a
     }
 
     $curlhandle = clickmeeting_init_curl();
-    curl_setopt($curlhandle, CURLOPT_URL, $apiurl.'conferences/'.$roomId.'/room/autologin_hash');
-    curl_setopt($curlhandle, CURLOPT_POST, 1);
-    curl_setopt($curlhandle, CURLOPT_POSTFIELDS, $params);
-    $r = curl_exec($curlhandle);
-    $decoded = json_decode($r, true);
+    $result = $curlhandle->post($apiurl.'conferences/'.$roomId.'/room/autologin_hash', $params);
+    $decoded = json_decode($result, true);
 
     return !empty($decoded['autologin_hash'])
         ? $decoded['autologin_hash']
@@ -279,10 +255,8 @@ function clickmeeting_is_room_historical($roomId)
     $apiurl = get_config('clickmeeting', 'apiurl');
 
     $curlhandle = clickmeeting_init_curl();
-    curl_setopt($curlhandle, CURLOPT_URL, $apiurl . 'conferences/' . $roomId);
-    $r = curl_exec($curlhandle);
-
-    $response = json_decode($r, true);
+    $result = $curlhandle->get($apiurl . 'conferences/' . $roomId);
+    $response = json_decode($result, true);
 
     if (!empty($response['code']) && '404' === $response['code']) {
         return true;
@@ -796,18 +770,23 @@ function clickmeeting_extend_settings_navigation(settings_navigation $settingsna
 /**
  * Initialize curl hande for clickmeeting api
  *
- * @return Resource
+ * @return \curl
  */
 function clickmeeting_init_curl()
 {
-    $curlhandle = curl_init();
-    curl_setopt($curlhandle, CURLOPT_TIMEOUT, 100);
-    curl_setopt($curlhandle, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curlhandle, CURLOPT_HTTPHEADER, ['X-Api-Key: ' . clickmeeting_get_api_key()]);
+    $curlhandle = new \curl();
+
+    $curlhandle->setHeader(['X-Api-Key: ' . clickmeeting_get_api_key()]);
+    $curlhandle->setopt([
+        'CURLOPT_TIMEOUT' => 100,
+        'CURLOPT_RETURNTRANSFER' => true
+    ]);
 
     if ('develop' === '{{env}}') { //hack for local development
-        curl_setopt($curlhandle, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($curlhandle, CURLOPT_SSL_VERIFYHOST, false);
+        $curlhandle->setopt([
+            'CURLOPT_SSL_VERIFYPEER' => false,
+            'CURLOPT_SSL_VERIFYHOST' => false
+        ]);
     }
 
     return $curlhandle;
