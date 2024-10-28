@@ -128,18 +128,6 @@ if (empty($token) && clickmeeting_is_token_protected($clickmeeting)) {
 
 <?php
 
-$context = context_module::instance($cm->id);
-if (is_siteadmin()) {
-    $role = 'host'; // host
-} elseif (has_capability('mod/clickmeeting:host', $context)) {
-    //if(has_capability('mod/clickmeeting:host', $context)) {
-    $role = 'host';
-} elseif (has_capability('mod/clickmeeting:presenter', $context)) {
-    $role = 'presenter';
-} elseif (has_capability('mod/clickmeeting:listener', $context)) {
-    $role = 'listener';
-}
-
 $auth = '';
 if (clickmeeting_is_password_protected($clickmeeting)) {
     $auth = $clickmeeting_conference->password;
