@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,56 +15,63 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package moodlecore
- * @subpackage backup-moodle2
+ * Structure step to restore one choice activity
+ *
+ * @package mod_clickmeeting
  * @copyright 2024 Clickmeeting
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-/**
-* Structure step to restore one choice activity
-*/
 class restore_clickmeeting_activity_structure_step extends restore_activity_structure_step {
 
-protected function define_structure() {
+    /**
+     * Defines table structure
+     */
+    protected function define_structure() {
+        $paths = [];
+        $userinfo = $this->get_setting_value('userinfo');
 
-$paths = array();
-$userinfo = $this->get_setting_value('userinfo');
+        $paths[] = new restore_path_element('clickmeeting', '/activity/clickmeeting');
+        $paths[] = new restore_path_element('clickmeeting_conferences', '/activity/clickmeeting/conferences/conference');
 
-$paths[] = new restore_path_element('clickmeeting', '/activity/clickmeeting');
-$paths[] = new restore_path_element('clickmeeting_conferences', '/activity/clickmeeting/conferences/conference');
+        return $this->prepare_activity_structure($paths);
+    }
 
-// Return the paths wrapped into standard activity structure
-return $this->prepare_activity_structure($paths);
-}
+    /**
+     * Inserts data into new table
+     *
+     * @param object $data
+     */
+    protected function process_clickmeeting($data) {
+        global $DB;
 
-protected function process_clickmeeting($data) {
-global $DB;
+        $data = (object)$data;
+        $oldid = $data->id;
+        $data->course = $this->get_courseid();
 
-$data = (object)$data;
-$oldid = $data->id;
-$data->course = $this->get_courseid();
+        $newitemid = $DB->insert_record('clickmeeting', $data);
+        $this->apply_activity_instance($newitemid);
+    }
 
-// insert the choice record
-$newitemid = $DB->insert_record('clickmeeting', $data);
-// immediately after inserting "activity" record, call this
-$this->apply_activity_instance($newitemid);
-}
+    /**
+     * Inserts conference data into new table
+     *
+     * @param object $data
+     */
+    protected function process_clickmeeting_conferences($data) {
+        global $DB;
 
-protected function process_clickmeeting_conferences($data) {
-global $DB;
+        $data = (object)$data;
+        $oldid = $data->id;
 
-$data = (object)$data;
-$oldid = $data->id;
+        $data->clickmeeting_id = $this->get_new_parentid('clickmeeting');
 
-$data->clickmeeting_id = $this->get_new_parentid('clickmeeting');
-//$data->timemodified = $this->apply_date_offset($data->timemodified);
+        $newitemid = $DB->insert_record('clickmeeting_conferences', $data);
+    }
 
-$newitemid = $DB->insert_record('clickmeeting_conferences', $data);
-}
-
-protected function after_execute() {
-// Add choice related files, no need to match by itemname (just internally handled context)
-$this->add_related_files('mod_clickmeeting', 'intro', null);
-}
+    /**
+     * Defines relates after exec
+     */
+    protected function after_execute() {
+        $this->add_related_files('mod_clickmeeting', 'intro', null);
+    }
 }

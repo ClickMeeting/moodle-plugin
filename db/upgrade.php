@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -25,8 +24,7 @@
  * it cannot do itself, it will tell you what you need to do.  The commands in
  * here will all be database-neutral, using the functions defined in DLL libraries.
  *
- * @package    mod
- * @subpackage clickmeeting
+ * @package    mod_clickmeeting
  * @copyright  2024 Clickmeeting
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -64,7 +62,7 @@ function xmldb_clickmeeting_upgrade($oldversion) {
 
     // To know more about how to write correct DB upgrade scripts it's
     // highly recommended to read information available at:
-    //   http://docs.moodle.org/en/Development:XMLDB_Documentation
+    // http://docs.moodle.org/en/Development:XMLDB_Documentation
     // and to play with the XMLDB Editor (in the admin menu) and its
     // PHP generation posibilities.
 
@@ -82,7 +80,7 @@ function xmldb_clickmeeting_upgrade($oldversion) {
 
         // Define field intro to be added to clickmeeting
         $table = new xmldb_table('clickmeeting');
-        $field = new xmldb_field('intro', XMLDB_TYPE_TEXT, 'medium', null, null, null, null,'name');
+        $field = new xmldb_field('intro', XMLDB_TYPE_TEXT, 'medium', null, null, null, null, 'name');
 
         // Add field intro
         if (!$dbman->field_exists($table, $field)) {
@@ -131,7 +129,7 @@ function xmldb_clickmeeting_upgrade($oldversion) {
 
         // Define index course (not unique) to be added to clickmeeting
         $table = new xmldb_table('clickmeeting');
-        $index = new xmldb_index('courseindex', XMLDB_INDEX_NOTUNIQUE, array('course'));
+        $index = new xmldb_index('courseindex', XMLDB_INDEX_NOTUNIQUE, ['course']);
 
         // Add index to course field
         if (!$dbman->index_exists($table, $index)) {
@@ -151,7 +149,7 @@ function xmldb_clickmeeting_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2007040200, 'clickmeeting');
     }
 
-    if ($oldversion < 20181010) {
+    if ($oldversion < 2018101000) {
 
         $table = new xmldb_table('clickmeeting');
         $field = new xmldb_field('user_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'description');

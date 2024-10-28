@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -15,15 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Defines the version of clickmeeting
  *
  * This code fragment is called by moodle_needs_upgrading() and
  * /admin/index.php
  *
- * @package    mod
- * @subpackage clickmeeting
+ * @package    mod_clickmeeting
  * @copyright  2024 Clickmeeting
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */

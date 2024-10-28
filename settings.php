@@ -15,17 +15,16 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Book plugin settings
+ * Clickmeeting plugin settings
  *
- * @package    mod_book
- * @copyright  2004-2011 Petr Skoda {@link http://skodak.org}
+ * @package    mod_clickmeeting
+ * @copyright  2024 Clickmeeting
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-if ($ADMIN->fulltree)
-{
+if ($ADMIN->fulltree) {
     require_once(dirname(__FILE__).'/lib.php');
 
     $settings->add(new admin_setting_configtext('clickmeeting/apiurl',

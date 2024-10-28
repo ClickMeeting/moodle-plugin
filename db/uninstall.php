@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -16,10 +15,11 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Uninstall Clickmeeting plugin
+ *
  * @see uninstall_plugin()
  *
- * @package    mod
- * @subpackage clickmeeting
+ * @package    mod_clickmeeting
  * @copyright  2024 Clickmeeting
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
