@@ -46,10 +46,11 @@ class mod_clickmeeting_mod_form extends moodleform_mod {
     public function definition() {
         global $CFG, $DB, $PAGE, $COURSE, $USER, $CLICKMEETING_OWNER_ID;
 
-        if (isset($_GET['check_availability'])) {
+        if (1 === optional_param('check_availability', null, PARAM_INT)) {
             $conferenceId = 0;
-            if (!empty($_GET['coursemodule'])) {
-                $cm = get_coursemodule_from_id('clickmeeting', $_GET['coursemodule'], 0, false, MUST_EXIST);
+            $courseModuleId = optional_param('coursemodule', null, PARAM_INT);
+            if (null !== $courseModuleId) {
+                $cm = get_coursemodule_from_id('clickmeeting', $courseModuleId, 0, false, MUST_EXIST);
                 $course = $DB->get_record('course', array('id' => $cm->course), '*', MUST_EXIST);
                 $clickmeeting = $DB->get_record('clickmeeting', array('id' => $cm->instance), '*', MUST_EXIST)
                 ;
@@ -60,7 +61,9 @@ class mod_clickmeeting_mod_form extends moodleform_mod {
                 $CLICKMEETING_OWNER_ID = $USER->id;
             }
 
-            if (clickmeeting_check_conference_availability($_POST['start_time'], $_POST['duration'], $conferenceId)) {
+            $conferenceStartTime = required_param('start_time', PARAM_TEXT);
+            $conferenceDuration = required_param('duration', PARAM_INT);
+            if (clickmeeting_check_conference_availability($conferenceStartTime, $conferenceDuration, $conferenceId)) {
                 http_response_code(200);
                 echo 'SUCCESS';
             } else {
