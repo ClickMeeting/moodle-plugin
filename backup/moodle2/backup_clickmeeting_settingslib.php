@@ -18,7 +18,7 @@
 /**
  * @package moodlecore
  * @subpackage backup-moodle2
- * @copyright 2010 onwards YOUR_NAME_GOES_HERE {@link YOUR_URL_GOES_HERE}
+ * @copyright 2024 Clickmeeting
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
  
