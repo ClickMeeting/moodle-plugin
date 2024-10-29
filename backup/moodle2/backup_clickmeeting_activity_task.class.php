@@ -17,7 +17,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once($CFG->dirroot . '/mod/clickmeeting/backup/moodle2/backup_clickmeeting_stepslib.php');
-require_once($CFG->dirroot . '/mod/clickmeeting/backup/moodle2/backup_clickmeeting_settingslib.php');
+
+use mod_clickmeeting\backup_activity_structure_step;
 
 /**
  * Activity task backup
@@ -39,7 +40,7 @@ class backup_clickmeeting_activity_task extends backup_activity_task {
      * Define (add) particular steps this activity can have
      */
     protected function define_my_steps() {
-        $this->add_step(new backup_clickmeeting_activity_structure_step('clickmeeting_structure', 'clickmeeting.xml'));
+        $this->add_step(new backup_activity_structure_step('clickmeeting_structure', 'clickmeeting.xml'));
     }
 
     /**

@@ -16,7 +16,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot . '/mod/clickmeeting/backup/moodle2/restore_clickmeeting_stepslib.php'); // Because it exists (must)
+require_once($CFG->dirroot . '/mod/clickmeeting/backup/moodle2/restore_clickmeeting_stepslib.php');
+
+use mod_clickmeeting\restore_activity_structure_step;
 
 /**
  * Choice restore task that provides all the settings and steps to perform one
@@ -40,7 +42,7 @@ class restore_clickmeeting_activity_task extends restore_activity_task {
      */
     protected function define_my_steps() {
         // clickmeeting only has one structure step
-        $this->add_step(new restore_clickmeeting_activity_structure_step('clickmeeting_structure', 'clickmeeting.xml'));
+        $this->add_step(new restore_activity_structure_step('clickmeeting_structure', 'clickmeeting.xml'));
     }
 
     /**
