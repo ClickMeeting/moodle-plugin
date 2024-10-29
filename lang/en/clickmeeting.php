@@ -76,3 +76,5 @@ $string['clickmeeting:presenter'] = 'Presenter';
 $string['startdate_booked'] = 'This start date is already booked';
 $string['update_error'] = 'Error updating record';
 $string['api_404_error'] = '404 Not Found';
+
+$string['privacy:metadata'] = 'The Virtual Class block only displays existing conference data';
