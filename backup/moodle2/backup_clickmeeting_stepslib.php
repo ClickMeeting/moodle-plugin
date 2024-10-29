@@ -27,6 +27,9 @@ namespace mod_clickmeeting;
 use backup;
 use backup_nested_element;
 
+/**
+ * Define the complete choice structure
+ */
 class backup_activity_structure_step extends \backup_activity_structure_step {
 
     /**
