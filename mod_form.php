@@ -58,7 +58,7 @@ class mod_clickmeeting_mod_form extends moodleform_mod {
         if (1 === optional_param('check_availability', null, PARAM_INT)) {
             $conferenceid = 0;
             $coursemoduleid = optional_param('coursemodule', null, PARAM_INT);
-            if (null !== $coursemoduleid) {
+            if (0 !== $coursemoduleid) {
                 $cm = get_coursemodule_from_id('clickmeeting', $coursemoduleid, 0, false, MUST_EXIST);
                 $course = $DB->get_record('course', ['id' => $cm->course], '*', MUST_EXIST);
                 $clickmeeting = $DB->get_record('clickmeeting', ['id' => $cm->instance], '*', MUST_EXIST);
