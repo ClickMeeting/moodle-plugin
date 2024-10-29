@@ -1,5 +1,4 @@
 <?php
-
 // This file is part of Moodle - http://moodle.org/
 //
 // Moodle is free software: you can redistribute it and/or modify
@@ -24,19 +23,14 @@
  * logic, should go to locallib.php. This will help to save some memory when
  * Moodle is performing actions across all modules.
  *
- * @package    mod
- * @subpackage clickmeeting
+ * @package    mod_clickmeeting
  * @copyright  2024 Clickmeeting
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-////////////////////////////////////////////////////////////////////////////////
-// Moodle core API                                                            //
-////////////////////////////////////////////////////////////////////////////////
-
-$clickmeeting_authTypeMap = [
+$clickmeetingauthtypes = [
     '1' => 'open',
     '2' => 'password',
     '3' => 'token',
@@ -49,12 +43,13 @@ $clickmeeting_authTypeMap = [
  * @param string $feature FEATURE_xx constant for requested feature
  * @return mixed true if the feature is supported, null if unknown
  */
-function clickmeeting_supports($feature)
-{
+function clickmeeting_supports($feature) {
     switch ($feature) {
-        case FEATURE_MOD_INTRO:         return false;
-        case FEATURE_BACKUP_MOODLE2:    return false;
-        default:                        return null;
+        case FEATURE_BACKUP_MOODLE2:
+        case FEATURE_MOD_INTRO:
+            return false;
+        default:
+            return null;
     }
 }
 
@@ -65,27 +60,28 @@ function clickmeeting_supports($feature)
  * @param int $length Strings length
  * @return string Generated string
  */
-function clickmeeting_get_random_string($length = 6)
-{
+function clickmeeting_get_random_string($length = 6) {
     return substr(md5(rand()), 0, $length);
 }
 
 /**
- * @param string $startTime
- * @param int duration
+ * Checks if time slot is available
+ *
+ * @param string $starttime
+ * @param int $duration
+ * @param int $id
  * @return boolean
  */
-function clickmeeting_check_conference_availability($startTime, $duration, $id = 0)
-{
+function clickmeeting_check_conference_availability($starttime, $duration, $id = 0) {
     $apiurl = get_config('clickmeeting', 'apiurl');
 
-    $datetime = new DateTime($startTime);
-    $utcTimezone = new DateTimeZone('UTC');
-    $datetime->setTimezone($utcTimezone);
-    $startTime = $datetime->format('Y-m-d H:i:s');
+    $datetime = new DateTime($starttime);
+    $utctimezone = new DateTimeZone('UTC');
+    $datetime->setTimezone($utctimezone);
+    $starttime = $datetime->format('Y-m-d H:i:s');
 
     $params = [
-        'start_time' => $startTime,
+        'start_time' => $starttime,
         'duration' => $duration,
         'id' => $id,
     ];
@@ -100,12 +96,11 @@ function clickmeeting_check_conference_availability($startTime, $duration, $id =
  *
  * @return string
  */
-function clickmeeting_get_api_key()
-{
-    global $CLICKMEETING_OWNER_ID, $DB, $CFG;
+function clickmeeting_get_api_key() {
+    global $clickmeetingowner, $DB, $CFG;
     require_once($CFG->dirroot.'/user/profile/lib.php');
 
-    $user = $DB->get_record('user', array('id' => $CLICKMEETING_OWNER_ID));
+    $user = $DB->get_record('user', ['id' => $clickmeetingowner]);
     profile_load_data($user);
 
     if (isset($user->profile_field_clickmeetingapikey) && !empty($user->profile_field_clickmeetingapikey)) {
@@ -121,8 +116,7 @@ function clickmeeting_get_api_key()
  * @param array $params
  * @return string
  */
-function clickmeeting_add_conference($params)
-{
+function clickmeeting_add_conference($params) {
     $apiurl = get_config('clickmeeting', 'apiurl');
 
     $curlhandle = clickmeeting_init_curl();
@@ -134,12 +128,11 @@ function clickmeeting_add_conference($params)
 /**
  * Returns api results
  *
- * @param array $params
  * @param int $conferenceid
+ * @param array $params
  * @return string
  */
-function clickmeeting_edit_conference($conferenceid, $params)
-{
+function clickmeeting_edit_conference($conferenceid, $params) {
     $apiurl = get_config('clickmeeting', 'apiurl');
 
     $curlhandle = clickmeeting_init_curl();
@@ -151,17 +144,16 @@ function clickmeeting_edit_conference($conferenceid, $params)
 /**
  * Returns api results
  *
- * @param array $params
  * @param int $conferenceid
+ * @param string $title
  * @return string
  */
-function clickmeeting_edit_conference_title($conferenceid, $title)
-{
+function clickmeeting_edit_conference_title($conferenceid, $title) {
     $apiurl = get_config('clickmeeting', 'apiurl');
 
-    $params = array(
-        'name' => $title
-    );
+    $params = [
+        'name' => $title,
+    ];
 
     $curlhandle = clickmeeting_init_curl();
     $result = $curlhandle->put($apiurl.'conferences/'.$conferenceid, [], ['CURLOPT_POSTFIELDS' => http_build_query($params, '', '&')]);
@@ -175,8 +167,7 @@ function clickmeeting_edit_conference_title($conferenceid, $title)
  * @param int $conferenceid
  * @return string
  */
-function clickmeeting_delete_conference($conferenceid)
-{
+function clickmeeting_delete_conference($conferenceid) {
     $apiurl = get_config('clickmeeting', 'apiurl');
 
     $curlhandle = clickmeeting_init_curl();
@@ -187,62 +178,70 @@ function clickmeeting_delete_conference($conferenceid)
 
 
 /**
- * Returns api results
+ * Returns access tokens
  *
- * @param int $roomId
+ * @param int $roomid
  * @return string
  */
-
-function clickmeeting_generate_token($roomId)
-{
+function clickmeeting_generate_token($roomid) {
     $apiurl = get_config('clickmeeting', 'apiurl');
 
-    $params = array();
+    $params = [];
     $params['how_many'] = 1;
 
     $curlhandle = clickmeeting_init_curl();
-    $result = $curlhandle->post($apiurl.'conferences/'.$roomId.'/tokens', $params);
+    $result = $curlhandle->post($apiurl.'conferences/'.$roomid.'/tokens', $params);
     $decoder = json_decode($result, true);
 
     return $decoder['access_tokens'][0]['token'];
 }
 
-function clickmeeting_is_token_protected(stdClass $clickmeeting)
-{
+/**
+ * Checks if conference is password protected
+ *
+ * @param stdClass $clickmeeting
+ * @return boolean
+ */
+function clickmeeting_is_token_protected(stdClass $clickmeeting) {
     return in_array($clickmeeting->access_type, [3, 'token']);
 }
 
-function clickmeeting_is_password_protected(stdClass $clickmeeting)
-{
+/**
+ * Checks if conference is password protected
+ *
+ * @param stdClass $clickmeeting
+ * @return boolean
+ */
+function clickmeeting_is_password_protected(stdClass $clickmeeting) {
     return in_array($clickmeeting->access_type, [2, 'password']);
 }
 
 /**
  * Returns api results
  *
- * @param int $conferenceid
+ * @param int $roomid
  * @param string $email
  * @param string $nickname
  * @param string $role
- * @param string $password
+ * @param string $auth
+ * @param string $authtype
  * @return string
  */
-function clickmeeting_get_login_url($roomId, $email, $nickname, $role, $auth, $authType)
-{
-    global $clickmeeting_authTypeMap;
+function clickmeeting_get_login_url($roomid, $email, $nickname, $role, $auth, $authtype) {
+    global $clickmeetingauthtypes;
     $apiurl = get_config('clickmeeting', 'apiurl');
 
-    $params = array();
+    $params = [];
     $params['email'] = $email;
     $params['nickname'] = $nickname;
     $params['role'] = $role;
 
-    if ('1' !== $authType) {
-        $params[$clickmeeting_authTypeMap[$authType]] = $auth;
+    if ('1' !== $authtype) {
+        $params[$clickmeetingauthtypes[$authtype]] = $auth;
     }
 
     $curlhandle = clickmeeting_init_curl();
-    $result = $curlhandle->post($apiurl.'conferences/'.$roomId.'/room/autologin_hash', $params);
+    $result = $curlhandle->post($apiurl.'conferences/'.$roomid.'/room/autologin_hash', $params);
     $decoded = json_decode($result, true);
 
     return !empty($decoded['autologin_hash'])
@@ -250,12 +249,17 @@ function clickmeeting_get_login_url($roomId, $email, $nickname, $role, $auth, $a
         : '';
 }
 
-function clickmeeting_is_room_historical($roomId)
-{
+/**
+ * Checks if attendee could join conference
+ *
+ * @param string $roomid
+ * @return boolean
+ */
+function clickmeeting_is_room_historical($roomid) {
     $apiurl = get_config('clickmeeting', 'apiurl');
 
     $curlhandle = clickmeeting_init_curl();
-    $result = $curlhandle->get($apiurl . 'conferences/' . $roomId);
+    $result = $curlhandle->get($apiurl . 'conferences/' . $roomid);
     $response = json_decode($result, true);
 
     if (!empty($response['code']) && '404' === $response['code']) {
@@ -277,15 +281,14 @@ function clickmeeting_is_room_historical($roomId)
  * will create a new instance and return the id number
  * of the new instance.
  *
- * @param object $clickmeeting An object from the form in mod_form.php
- * @param mod_clickmeeting_mod_form $mform
+ * @param stdClass $clickmeeting
+ * @param mod_clickmeeting_mod_form|null $mform
  * @return int The id of the newly inserted clickmeeting record
  */
-function clickmeeting_add_instance(stdClass $clickmeeting, mod_clickmeeting_mod_form $mform = null)
-{
+function clickmeeting_add_instance(stdClass $clickmeeting, mod_clickmeeting_mod_form $mform = null) {
     global $DB, $COURSE, $USER;
-    global $CLICKMEETING_OWNER_ID;
-    $CLICKMEETING_OWNER_ID = $USER->id;
+    global $clickmeetingowner;
+    $clickmeetingowner = $USER->id;
     $section = required_param('section', PARAM_INT);
     $cw = get_fast_modinfo($COURSE)->get_section_info($section);
 
@@ -303,7 +306,7 @@ function clickmeeting_add_instance(stdClass $clickmeeting, mod_clickmeeting_mod_
 
     if (false != $result) {
         $password = clickmeeting_generate_password(8);
-        $params = array();
+        $params = [];
 
         $timezone = date_default_timezone_get();
 
@@ -341,6 +344,7 @@ function clickmeeting_add_instance(stdClass $clickmeeting, mod_clickmeeting_mod_
         }
         $transaction->allow_commit();
     }
+
     return $result;
 }
 
@@ -352,13 +356,12 @@ function clickmeeting_add_instance(stdClass $clickmeeting, mod_clickmeeting_mod_
  * (defined by the form in mod_form.php) this function
  * will update an existing instance with new data.
  *
- * @param object $clickmeeting An object from the form in mod_form.php
- * @param mod_clickmeeting_mod_form $mform
- * @return boolean Success/Fail
+ * @param stdClass $clickmeeting
+ * @param mod_clickmeeting_mod_form|null $mform
+ * @return boolean
  */
-function clickmeeting_update_instance(stdClass $clickmeeting, mod_clickmeeting_mod_form $mform = null)
-{
-    global $DB, $COURSE, $USER, $CLICKMEETING_OWNER_ID;
+function clickmeeting_update_instance(stdClass $clickmeeting, mod_clickmeeting_mod_form $mform = null) {
+    global $DB, $COURSE, $USER, $clickmeetingowner;
     $section = required_param('section', PARAM_INT);
     $cw = get_fast_modinfo($COURSE)->get_section_info($section);
     $timezone = date_default_timezone_get();
@@ -366,8 +369,8 @@ function clickmeeting_update_instance(stdClass $clickmeeting, mod_clickmeeting_m
     $clickmeeting->timemodified = time();
     $clickmeeting->id = $clickmeeting->instance;
     $clickmeeting->start_time = date('Y-m-d H:i:s', $clickmeeting->timestart);
-    $CLICKMEETING_OWNER_ID = $clickmeeting->user_id;
-    $conference = $DB->get_record('clickmeeting_conferences', array('clickmeeting_id' => $clickmeeting->id));
+    $clickmeetingowner = $clickmeeting->user_id;
+    $conference = $DB->get_record('clickmeeting_conferences', ['clickmeeting_id' => $clickmeeting->id]);
 
     if (!clickmeeting_check_conference_availability($clickmeeting->start_time, $clickmeeting->duration, $conference->conference_id)) {
         throw new \moodle_exception('startdate_booked', 'clickmeeting');
@@ -424,23 +427,22 @@ function clickmeeting_update_instance(stdClass $clickmeeting, mod_clickmeeting_m
  * @param int $id Id of the module instance
  * @return boolean Success/Failure
  */
-function clickmeeting_delete_instance($id)
-{
-    global $DB, $COURSE, $CLICKMEETING_OWNER_ID;
+function clickmeeting_delete_instance($id) {
+    global $DB, $COURSE, $clickmeetingowner;
 
-    if (! $clickmeeting = $DB->get_record('clickmeeting', array('id' => $id))) {
+    if (! $clickmeeting = $DB->get_record('clickmeeting', ['id' => $id])) {
         return false;
     }
 
-    $CLICKMEETING_OWNER_ID = $clickmeeting->user_id;
+    $clickmeetingowner = $clickmeeting->user_id;
 
-    if (0 < $DB->count_records('clickmeeting_conferences', array('clickmeeting_id' => $clickmeeting->id))) {
-        $conference_id = $DB->get_field('clickmeeting_conferences', 'conference_id', array('clickmeeting_id' => $clickmeeting->id));
+    if (0 < $DB->count_records('clickmeeting_conferences', ['clickmeeting_id' => $clickmeeting->id])) {
+        $conferenceid = $DB->get_field('clickmeeting_conferences', 'conference_id', ['clickmeeting_id' => $clickmeeting->id]);
     } else {
         return false;
     }
 
-    $apiresult = clickmeeting_delete_conference($conference_id);
+    $apiresult = clickmeeting_delete_conference($conferenceid);
 
     if ('"200 OK"' != $apiresult) {
         // jezeli nie znajdujemy conferencji w clickmeetingu to nie trzeba jej tam usuwac
@@ -449,10 +451,10 @@ function clickmeeting_delete_instance($id)
         }
     }
 
-    if (0 < $DB->count_records('clickmeeting_conferences', array('clickmeeting_id' => $clickmeeting->id))) {
-        $DB->delete_records('clickmeeting_conferences', array('clickmeeting_id' => $clickmeeting->id));
+    if (0 < $DB->count_records('clickmeeting_conferences', ['clickmeeting_id' => $clickmeeting->id])) {
+        $DB->delete_records('clickmeeting_conferences', ['clickmeeting_id' => $clickmeeting->id]);
     }
-    $DB->delete_records('clickmeeting', array('id' => $clickmeeting->id));
+    $DB->delete_records('clickmeeting', ['id' => $clickmeeting->id]);
 
     return true;
 }
@@ -466,8 +468,7 @@ function clickmeeting_delete_instance($id)
  *
  * @return stdClass|null
  */
-function clickmeeting_user_outline($course, $user, $mod, $clickmeeting)
-{
+function clickmeeting_user_outline() {
     $return = new stdClass();
     $return->time = 0;
     $return->info = '';
@@ -482,10 +483,8 @@ function clickmeeting_user_outline($course, $user, $mod, $clickmeeting)
  * @param stdClass $user the record of the user we are generating report for
  * @param cm_info $mod course module info
  * @param stdClass $clickmeeting the module instance record
- * @return void, is supposed to echp directly
  */
-function clickmeeting_user_complete($course, $user, $mod, $clickmeeting)
-{
+function clickmeeting_user_complete($course, $user, $mod, $clickmeeting) {
 }
 
 /**
@@ -495,9 +494,8 @@ function clickmeeting_user_complete($course, $user, $mod, $clickmeeting)
  *
  * @return boolean
  */
-function clickmeeting_print_recent_activity($course, $viewfullnames, $timestart)
-{
-    return false;  //  True if anything was printed, otherwise false
+function clickmeeting_print_recent_activity() {
+    return false;  // True if anything was printed, otherwise false
 }
 
 /**
@@ -505,28 +503,29 @@ function clickmeeting_print_recent_activity($course, $viewfullnames, $timestart)
  *
  * This callback function is supposed to populate the passed array with
  * custom activity records. These records are then rendered into HTML via
- * {@link clickmeeting_print_recent_mod_activity()}.
+ * {@see clickmeeting_print_recent_mod_activity}.
  *
  * @param array $activities sequentially indexed array of objects with the 'cmid' property
  * @param int $index the index in the $activities to use for the next record
  * @param int $timestart append activity since this time
  * @param int $courseid the id of the course we produce the report for
  * @param int $cmid course module id
- * @param int $userid check for a particular user's activity only, defaults to 0 (all users)
- * @param int $groupid check for a particular group's activity only, defaults to 0 (all groups)
- * @return void adds items into $activities and increases $index
+ * @param int|null $userid check for a particular user's activity only, defaults to 0 (all users)
+ * @param int|null $groupid check for a particular group's activity only, defaults to 0 (all groups)
  */
-function clickmeeting_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid=0, $groupid=0)
-{
+function clickmeeting_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid = 0, $groupid = 0) {
 }
 
 /**
- * Prints single activity item prepared by {@see clickmeeting_get_recent_mod_activity()}
-
- * @return void
+ * Prints single activity item prepared by {@see clickmeeting_get_recent_mod_activity}
+ *
+ * @param string $activity
+ * @param int $courseid the id of the course we produce the report for
+ * @param string $detail
+ * @param string $modnames
+ * @param boolean $viewfullnames
  */
-function clickmeeting_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames)
-{
+function clickmeeting_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
 }
 
 /**
@@ -535,27 +534,19 @@ function clickmeeting_print_recent_mod_activity($activity, $courseid, $detail, $
  * as sending out mail, toggling flags etc ...
  *
  * @return boolean
- * @todo Finish documenting this function
  **/
-function clickmeeting_cron()
-{
+function clickmeeting_cron() {
     return true;
 }
 
 /**
  * Returns all other caps used in the module
  *
- * @example return array('moodle/site:accessallgroups');
  * @return array
  */
-function clickmeeting_get_extra_capabilities()
-{
-    return array();
+function clickmeeting_get_extra_capabilities() {
+    return [];
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// Gradebook API                                                              //
-////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Is a given scale used by the instance of clickmeeting?
@@ -565,19 +556,14 @@ function clickmeeting_get_extra_capabilities()
  * modified if necessary. See forum, glossary or journal modules
  * as reference.
  *
- * @param int $clickmeetingid ID of an instance of this module
- * @return bool true if the scale is used by the given clickmeeting instance
+ * @param int $clickmeetingid
+ * @param int $scaleid
+ * @return bool
  */
-function clickmeeting_scale_used($clickmeetingid, $scaleid)
-{
+function clickmeeting_scale_used($clickmeetingid, $scaleid) {
     global $DB;
 
-    /** @example */
-    if ($scaleid and $DB->record_exists('clickmeeting', array('id' => $clickmeetingid, 'grade' => -$scaleid))) {
-        return true;
-    } else {
-        return false;
-    }
+    return $scaleid && $DB->record_exists('clickmeeting', ['id' => $clickmeetingid, 'grade' => -$scaleid]);
 }
 
 /**
@@ -585,18 +571,19 @@ function clickmeeting_scale_used($clickmeetingid, $scaleid)
  *
  * This is used to find out if scale used anywhere.
  *
- * @param $scaleid int
- * @return boolean true if the scale is used by any clickmeeting instance
+ * @param int $scaleid
+ * @return boolean
  */
-function clickmeeting_scale_used_anywhere($scaleid)
-{
+function clickmeeting_scale_used_anywhere($scaleid) {
     global $DB;
 
     try {
-        if ($scaleid and $DB->record_exists('clickmeeting', array('grade' => -$scaleid))) {
+        if ($scaleid && $DB->record_exists('clickmeeting', ['grade' => -$scaleid])) {
             return true;
         }
-    } catch (dml_exception $e) {}
+    } catch (dml_exception $e) {
+        return false;
+    }
 
     return false;
 }
@@ -606,36 +593,38 @@ function clickmeeting_scale_used_anywhere($scaleid)
  *
  * Needed by grade_update_mod_grades() in lib/gradelib.php
  *
- * @param stdClass $clickmeeting instance object with extra cmidnumber and modname property
- * @return void
+ * @param stdClass $clickmeeting
  */
-function clickmeeting_grade_item_update(stdClass $clickmeeting)
-{
+function clickmeeting_grade_item_update(stdClass $clickmeeting) {
     global $CFG, $DB;
     require_once($CFG->libdir.'/gradelib.php');
 
-    /** @example */
-    $item = array();
+    $item = [];
     $item['itemname'] = clean_param($clickmeeting->name, PARAM_NOTAGS);
     $item['gradetype'] = GRADE_TYPE_VALUE;
     $item['grademax']  = 0;
     $item['grademin']  = 0;
 
-    $conference_id = $DB->get_field('clickmeeting_conferences', 'conference_id', array('clickmeeting_id' => $clickmeeting->id));
-    clickmeeting_edit_conference_title($conference_id, $clickmeeting->name);
+    $conferenceid = $DB->get_field('clickmeeting_conferences', 'conference_id', ['clickmeeting_id' => $clickmeeting->id]);
+    clickmeeting_edit_conference_title($conferenceid, $clickmeeting->name);
 
     grade_update('mod/clickmeeting', $clickmeeting->course, 'mod', 'clickmeeting', $clickmeeting->id, 0, null, $item);
 }
 
-function clickmeeting_generate_password($length)
-{
-    $availableCharacters = '34679ACFGHJKMNPRSTUWXY';
+/**
+ * Returns easy to read password
+ *
+ * @param int $length
+ * @return string
+ */
+function clickmeeting_generate_password($length) {
+    $availablecharacters = '34679ACFGHJKMNPRSTUWXY';
     $password = '';
 
     for ($i = 0; $i < $length; $i++) {
-        $index = mt_rand(0, (strlen($availableCharacters) - 1));
-        $password .= $availableCharacters[$index];
-        $availableCharacters = str_replace($availableCharacters[$index], '', $availableCharacters);
+        $index = mt_rand(0, (strlen($availablecharacters) - 1));
+        $password .= $availablecharacters[$index];
+        $availablecharacters = str_replace($availablecharacters[$index], '', $availablecharacters);
     }
 
     return $password;
@@ -648,44 +637,33 @@ function clickmeeting_generate_password($length)
  *
  * @param stdClass $clickmeeting instance object with extra cmidnumber and modname property
  * @param int $userid update grade of specific user only, 0 means all participants
- * @return void
  */
-function clickmeeting_update_grades(stdClass $clickmeeting, $userid = 0)
-{
+function clickmeeting_update_grades(stdClass $clickmeeting, $userid = 0) {
     global $CFG, $DB;
     require_once($CFG->libdir.'/gradelib.php');
 
-    /** @example */
-    $grades = array(); // populate array of grade objects indexed by userid
+    $grades = []; // populate array of grade objects indexed by userid
 
     grade_update('mod/clickmeeting', $clickmeeting->course, 'mod', 'clickmeeting', $clickmeeting->id, 0, $grades);
 }
-
-////////////////////////////////////////////////////////////////////////////////
-// File API                                                                   //
-////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Returns the lists of all browsable file areas within the given module context
  *
  * The file area 'intro' for the activity introduction field is added automatically
- * by {@link file_browser::get_file_info_context_module()}
+ * by {@see file_browser::get_file_info_context_module}
  *
  * @param stdClass $course
  * @param stdClass $cm
  * @param stdClass $context
- * @return array of [(string)filearea] => (string)description
+ * @return array
  */
-function clickmeeting_get_file_areas($course, $cm, $context)
-{
-    return array();
+function clickmeeting_get_file_areas($course, $cm, $context) {
+    return [];
 }
 
 /**
  * File browsing support for clickmeeting file areas
- *
- * @package mod_clickmeeting
- * @category files
  *
  * @param file_browser $browser
  * @param array $areas
@@ -696,10 +674,9 @@ function clickmeeting_get_file_areas($course, $cm, $context)
  * @param int $itemid
  * @param string $filepath
  * @param string $filename
- * @return file_info instance or null if not found
+ * @return file_info
  */
-function clickmeeting_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename)
-{
+function clickmeeting_get_file_info($browser, $areas, $course, $cm, $context, $filearea, $itemid, $filepath, $filename) {
     return null;
 }
 
@@ -717,8 +694,7 @@ function clickmeeting_get_file_info($browser, $areas, $course, $cm, $context, $f
  * @param bool $forcedownload whether or not force download
  * @param array $options additional options affecting the file serving
  */
-function clickmeeting_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options=array())
-{
+function clickmeeting_pluginfile($course, $cm, $context, $filearea, array $args, $forcedownload, array $options = []) {
     global $DB, $CFG;
 
     if ($context->contextlevel != CONTEXT_MODULE) {
@@ -730,22 +706,17 @@ function clickmeeting_pluginfile($course, $cm, $context, $filearea, array $args,
     send_file_not_found();
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Navigation API                                                             //
-////////////////////////////////////////////////////////////////////////////////
-
 /**
  * Extends the global navigation tree by adding clickmeeting nodes if there is a relevant content
  *
  * This can be called by an AJAX request so do not rely on $PAGE as it might not be set up properly.
  *
- * @param navigation_node $navref An object representing the navigation tree node of the clickmeeting module instance
+ * @param navigation_node $navref
  * @param stdClass $course
  * @param stdClass $module
  * @param cm_info $cm
  */
-function clickmeeting_extend_navigation(navigation_node $navref, stdclass $course, stdclass $module, cm_info $cm)
-{
+function clickmeeting_extend_navigation(navigation_node $navref, stdClass $course, stdClass $module, cm_info $cm) {
 }
 
 /**
@@ -754,11 +725,10 @@ function clickmeeting_extend_navigation(navigation_node $navref, stdclass $cours
  * This function is called when the context for the page is a clickmeeting module. This is not called by AJAX
  * so it is safe to rely on the $PAGE.
  *
- * @param settings_navigation $settingsnav {@link settings_navigation}
- * @param navigation_node $clickmeetingnode {@link navigation_node}
+ * @param settings_navigation $settingsnav
+ * @param navigation_node $clickmeetingnode
  */
-function clickmeeting_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $clickmeetingnode=null)
-{
+function clickmeeting_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $clickmeetingnode=null) {
 }
 
 /**
@@ -766,20 +736,19 @@ function clickmeeting_extend_settings_navigation(settings_navigation $settingsna
  *
  * @return \curl
  */
-function clickmeeting_init_curl()
-{
+function clickmeeting_init_curl() {
     $curlhandle = new \curl();
 
     $curlhandle->setHeader(['X-Api-Key: ' . clickmeeting_get_api_key()]);
     $curlhandle->setopt([
         'CURLOPT_TIMEOUT' => 100,
-        'CURLOPT_RETURNTRANSFER' => true
+        'CURLOPT_RETURNTRANSFER' => true,
     ]);
 
-    if ('develop' === '{{env}}') { //hack for local development
+    if ('develop' === '{{env}}') { // hack for local development
         $curlhandle->setopt([
             'CURLOPT_SSL_VERIFYPEER' => false,
-            'CURLOPT_SSL_VERIFYHOST' => false
+            'CURLOPT_SSL_VERIFYHOST' => false,
         ]);
     }
 
