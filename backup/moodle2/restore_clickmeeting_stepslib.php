@@ -48,10 +48,11 @@ class restore_activity_structure_step extends \restore_activity_structure_step {
      * @param object $data
      */
     protected function process_clickmeeting($data) {
-        global $DB;
+        global $DB, $USER;
 
         $data = (object)$data;
         $oldid = $data->id;
+        $data->user_id = $USER->id;
         $data->course = $this->get_courseid();
 
         $newitemid = $DB->insert_record('clickmeeting', $data);
@@ -64,11 +65,11 @@ class restore_activity_structure_step extends \restore_activity_structure_step {
      * @param object $data
      */
     protected function process_clickmeeting_conferences($data) {
-        global $DB;
+        global $DB, $USER;
 
         $data = (object)$data;
         $oldid = $data->id;
-
+        $data->user_id = $USER->id;
         $data->clickmeeting_id = $this->get_new_parentid('clickmeeting');
 
         $newitemid = $DB->insert_record('clickmeeting_conferences', $data);
