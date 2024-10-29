@@ -94,7 +94,7 @@ if (clickmeeting_is_password_protected($clickmeeting)) {
     $auth = $token;
 }
 
-$loginhash = clickmeeting_get_login_url($conference->conference_id, $USER->email, trim($USER->firstname . ' ' . $USER->lastname), $role, $auth, $clickmeeting->access_type);
+$loginhash = clickmeeting_get_login_url($conference->conference_id, $USER->email, fullname($USER), $role, $auth, $clickmeeting->access_type);
 
 // Output starts here
 echo $OUTPUT->header();
