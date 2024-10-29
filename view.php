@@ -85,7 +85,6 @@ if (empty($token) && clickmeeting_is_token_protected($clickmeeting)) {
 }
 
 $PAGE->requires->css('/mod/clickmeeting/styles/clickmeeting.css');
-$PAGE->requires->css('/mod/clickmeeting/styles/jquery.popupLight.css');
 $PAGE->requires->jquery();
 
 $auth = '';
