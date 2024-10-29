@@ -14,6 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace mod_clickmeeting;
+
+use backup;
+use backup_nested_element;
+
 /**
  * Define the complete choice structure for backup, with file and id annotations
  *
@@ -21,12 +26,6 @@
  * @copyright 2024 Clickmeeting
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-namespace mod_clickmeeting;
-
-use backup;
-use backup_nested_element;
-
 class backup_activity_structure_step extends \backup_activity_structure_step {
 
     /**
