@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace mod_clickmeeting;
+
+defined('MOODLE_INTERNAL') || die();
+
+use restore_path_element;
+
 /**
  * Structure step to restore one choice activity
  *
@@ -21,7 +27,7 @@
  * @copyright 2024 Clickmeeting
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class restore_clickmeeting_activity_structure_step extends restore_activity_structure_step {
+class restore_activity_structure_step extends \restore_activity_structure_step {
 
     /**
      * Defines table structure
@@ -42,10 +48,11 @@ class restore_clickmeeting_activity_structure_step extends restore_activity_stru
      * @param object $data
      */
     protected function process_clickmeeting($data) {
-        global $DB;
+        global $DB, $USER;
 
         $data = (object)$data;
         $oldid = $data->id;
+        $data->user_id = $USER->id;
         $data->course = $this->get_courseid();
 
         $newitemid = $DB->insert_record('clickmeeting', $data);
@@ -58,11 +65,11 @@ class restore_clickmeeting_activity_structure_step extends restore_activity_stru
      * @param object $data
      */
     protected function process_clickmeeting_conferences($data) {
-        global $DB;
+        global $DB, $USER;
 
         $data = (object)$data;
         $oldid = $data->id;
-
+        $data->user_id = $USER->id;
         $data->clickmeeting_id = $this->get_new_parentid('clickmeeting');
 
         $newitemid = $DB->insert_record('clickmeeting_conferences', $data);

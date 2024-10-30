@@ -21,7 +21,16 @@
  * @copyright 2024 Clickmeeting
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class backup_clickmeeting_activity_structure_step extends backup_activity_structure_step {
+
+namespace mod_clickmeeting;
+
+use backup;
+use backup_nested_element;
+
+/**
+ * Define the complete choice structure
+ */
+class backup_activity_structure_step extends \backup_activity_structure_step {
 
     /**
      * Define the complete structure for backup
