@@ -1,0 +1,24 @@
+name: Create Release with ZIP Asset
+
+on:
+  release:
+    types: [created]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Create ZIP file
+        run: |
+          zip -r mod_clickmeeting.latest.zip . -x "*.git*"
+
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v1
+        with:
+          files: mod_clickmeeting.latest.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
