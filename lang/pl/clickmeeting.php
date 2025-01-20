@@ -57,7 +57,6 @@ $string['form:password'] = 'Hasło';
 $string['form:token'] = 'Token';
 $string['form:no_sessions'] = 'Brak wolnego terminu';
 
-$string['view:joinmeeting'] = 'Dołącz do konferencji';
 $string['view:action'] = 'Akcja';
 $string['view:password'] = 'Hasło';
 $string['view:room_name'] = 'Nazwa pokoju';
