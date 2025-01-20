@@ -57,7 +57,6 @@ $string['form:password'] = 'Password';
 $string['form:token'] = 'Token';
 $string['form:no_sessions'] = 'Session already booked';
 
-$string['view:joinmeeting'] = 'Join meeting';
 $string['view:action'] = 'Action';
 $string['view:password'] = 'Password';
 $string['view:room_name'] = 'Room name';

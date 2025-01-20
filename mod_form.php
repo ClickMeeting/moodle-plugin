@@ -136,7 +136,7 @@ class mod_clickmeeting_mod_form extends moodleform_mod {
 
         $mform->addElement('header', 'clickmeetingfieldset', get_string('form:data_header', 'clickmeeting'));
 
-        $mform->addElement('date_time_selector', 'timestart', get_string('from'));
+        $mform->addElement('date_time_selector', 'timestart', get_string('fromdate'));
         $mform->addElement('select', 'duration', get_string('timelimit', 'quiz'), ['1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6]);
         $mform->addElement('hidden', 'clickmeeting_no_free_sessions', get_string('form:no_sessions', 'clickmeeting'));
         $mform->setType('clickmeeting_no_free_sessions', PARAM_TEXT);
