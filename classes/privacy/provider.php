@@ -50,6 +50,9 @@ class provider implements
             'lobby_msg' => 'privacy:metadata:clickmeeting:lobbymsg',
         ], 'privacy:metadata:clickmeeting');
 
+        $collection->add_database_table('clickmeeting_tokens', [
+            'user_id' => 'privacy:metadata:clickmeetingtokens:userid',
+        ], 'privacy:metadata:clickmeetingtokens');
 
         $collection->add_external_location_link('clickmeeting.com', [
             'email' => 'privacy:metadata:clickmeeting_api:email',
