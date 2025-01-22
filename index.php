@@ -41,7 +41,7 @@ $event = mod_clickmeeting\event\course_module_instance_list_viewed::create([
 ]);
 $event->trigger();
 
-$coursecontext = context_module::instance($course->id);
+$coursecontext = context_course::instance($course->id);
 
 $PAGE->set_url('/mod/clickmeeting/index.php', ['id' => $id]);
 $PAGE->set_title(format_string($course->fullname));
