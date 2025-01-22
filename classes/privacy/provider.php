@@ -25,10 +25,13 @@
 namespace mod_clickmeeting\privacy;
 use context_module;
 use core_privacy\local\metadata\collection;
+use core_privacy\local\metadata\provider as metadata_provider;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
+use core_privacy\local\request\core_userlist_provider;
 use core_privacy\local\request\helper;
+use core_privacy\local\request\plugin\provider as request_plugin_provider;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\writer;
@@ -36,10 +39,7 @@ use core_privacy\local\request\writer;
 /**
  * Ad hoc task that performs the actions for approved data privacy requests.
  */
-class provider implements
-    \core_privacy\local\metadata\provider,
-    \core_privacy\local\request\plugin\provider,
-    \core_privacy\local\request\core_userlist_provider {
+class provider implements metadata_provider, request_plugin_provider, core_userlist_provider {
 
     /**
      * Returns metadata about this system.
@@ -148,8 +148,22 @@ class provider implements
         $tokens->close();
     }
 
+    /**
+     * Delete all personal data for all users in the specified context.
+     *
+     * @param \context $context Context to delete data from.
+     */
     public static function delete_data_for_all_users_in_context(\context $context)
     {
+        global $DB;
+
+        if (!($context instanceof context_module)) {
+            return;
+        }
+
+        if ($cm = get_coursemodule_from_id('clickmeeting', $context->instanceid)) {
+            $DB->delete_records('clickmeeting_tokens', ['clickmeeting_id' => $cm->instance]);
+        }
     }
 
     /**
@@ -157,7 +171,7 @@ class provider implements
      *
      * @param   approved_contextlist    $contextlist    The approved contexts and user information to delete information for.
      */
-    public static function delete_data_for_user(approved_contextlist $contextlist) {
+    public static function delete_data_for_user(approved_contextlist $contextlist): void {
         global $DB;
 
         if (empty($contextlist->count())) {
@@ -185,8 +199,7 @@ class provider implements
      *
      * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
      */
-    public static function get_users_in_context(userlist $userlist)
-    {
+    public static function get_users_in_context(userlist $userlist): void {
         $context = $userlist->get_context();
 
         if (!($context instanceof context_module)) {
@@ -208,7 +221,31 @@ class provider implements
         $userlist->add_from_sql('userid', $sql, $params);
     }
 
-    public static function delete_data_for_users(approved_userlist $userlist)
-    {
+    /**
+     * Delete multiple users within a single context.
+     *
+     * @param   approved_userlist       $userlist The approved context and user information to delete information for.
+     */
+    public static function delete_data_for_users(approved_userlist $userlist): void {
+        global $DB;
+        $context = $userlist->get_context();
+
+        if (!($context instanceof context_module)) {
+            return;
+        }
+
+        $userids = $userlist->get_userids();
+        [$insql, $inparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        $params = array_merge($inparams, ['contextid' => $context->id, 'modlevel' => CONTEXT_MODULE]);
+
+        $sql = "SELECT cmtt.id
+                  FROM {clickmeeting_tokens} cmtt
+                  JOIN {clickmeeting} cmt ON cmtt.clickmeeting_id = cmt.id
+                  JOIN {modules} m ON m.name = 'clickmeeting'
+                  JOIN {course_modules} cm ON z.id = cm.instance AND m.id = cm.module
+                  JOIN {context} ctx ON ctx.instanceid = cm.id AND ctx.contextlevel = :modlevel
+                 WHERE ctx.id = :contextid";
+
+        $DB->delete_records_select('clickmeeting_tokens', "user_id $insql AND id IN ($sql)", $params);
     }
 }
