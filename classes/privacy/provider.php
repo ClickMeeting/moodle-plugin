@@ -66,8 +66,7 @@ class provider implements metadata_provider, request_plugin_provider, core_userl
      * @param   int $userid The user to search.
      * @return  contextlist $contextlist The list of contexts used in this plugin.
      */
-    public static function get_contexts_for_userid(int $userid): contextlist
-    {
+    public static function get_contexts_for_userid(int $userid): contextlist {
         $contextlist = new contextlist();
 
         $sql = 'SELECT c.id
@@ -96,7 +95,7 @@ class provider implements metadata_provider, request_plugin_provider, core_userl
      * @param   approved_contextlist    $contextlist    The approved contexts to export information for.
      * @link http://tandl.churchward.ca/2018/06/implementing-moodles-privacy-api-in.html
      */
-    public static function export_user_data(approved_contextlist $contextlist) {
+    public static function export_user_data(approved_contextlist $contextlist): void {
         global $DB;
 
         if (empty($contextlist->count())) {
@@ -153,8 +152,7 @@ class provider implements metadata_provider, request_plugin_provider, core_userl
      *
      * @param \context $context Context to delete data from.
      */
-    public static function delete_data_for_all_users_in_context(\context $context)
-    {
+    public static function delete_data_for_all_users_in_context(\context $context): void {
         global $DB;
 
         if (!($context instanceof context_module)) {
