@@ -80,11 +80,6 @@ $string['privacy:metadata:clickmeeting_api'] = 'In order to integrate with Click
 $string['privacy:metadata:clickmeeting_api:email'] = 'The user\'s e-mail address is sent from Moodle to allow you to access virtual classroom on the remote system.';
 $string['privacy:metadata:clickmeeting_api:nickname'] = 'Your full name is sent to the remote system to access virtual classroom on the remote system.';
 
-$string['privacy:metadata:clickmeeting:name'] = 'Title or class name';
-$string['privacy:metadata:clickmeeting:description'] = 'A short introduction what class is about';
-$string['privacy:metadata:clickmeeting:lobbymsg'] = 'A message shown to users waiting for class start';
-$string['privacy:metadata:clickmeeting'] = 'Plugin stores information about event metadata e.g. class name, message shown to users waiting for class';
-
 $string['privacy:metadata:clickmeetingtokens:userid'] = 'Access token is stored in context of user';
 $string['privacy:metadata:clickmeetingtokens'] = 'Plugin stores tokens assigned to particular user';
 

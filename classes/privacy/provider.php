@@ -23,11 +23,15 @@
  */
 
 namespace mod_clickmeeting\privacy;
+use context_module;
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\approved_userlist;
 use core_privacy\local\request\contextlist;
+use core_privacy\local\request\helper;
+use core_privacy\local\request\transform;
 use core_privacy\local\request\userlist;
+use core_privacy\local\request\writer;
 
 /**
  * Ad hoc task that performs the actions for approved data privacy requests.
@@ -44,12 +48,6 @@ class provider implements
      * @return  collection  The array of metadata
      */
     public static function get_metadata(collection $collection): collection {
-        $collection->add_database_table('clickmeeting', [
-            'name' => 'privacy:metadata:clickmeeting:name',
-            'description' => 'privacy:metadata:clickmeeting:description',
-            'lobby_msg' => 'privacy:metadata:clickmeeting:lobbymsg',
-        ], 'privacy:metadata:clickmeeting');
-
         $collection->add_database_table('clickmeeting_tokens', [
             'user_id' => 'privacy:metadata:clickmeetingtokens:userid',
         ], 'privacy:metadata:clickmeetingtokens');
@@ -62,24 +60,152 @@ class provider implements
         return $collection;
     }
 
+    /**
+     * Get the list of contexts that contain user information for the specified user.
+     *
+     * @param   int $userid The user to search.
+     * @return  contextlist $contextlist The list of contexts used in this plugin.
+     */
     public static function get_contexts_for_userid(int $userid): contextlist
     {
+        $contextlist = new contextlist();
+
+        $sql = 'SELECT c.id
+                  FROM {context} c
+            INNER JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
+            INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
+            INNER JOIN {clickmeeting} cmt ON cmt.id = cm.instance
+            LEFT JOIN {clickmeeting_tokens} cmtt ON cmtt.clickmeeting_id = cmt.id
+                 WHERE cmtt.user_id = :userid
+        ';
+
+        $params = [
+            'modname' => 'clickmeeting',
+            'contextlevel' => CONTEXT_MODULE,
+            'userid' => $userid,
+        ];
+
+        $contextlist->add_from_sql($sql, $params);
+
+        return $contextlist;
     }
 
-    public static function export_user_data(approved_contextlist $contextlist)
-    {
+    /**
+     * Export all user data for the specified user, in the specified contexts, using the supplied exporter instance.
+     *
+     * @param   approved_contextlist    $contextlist    The approved contexts to export information for.
+     * @link http://tandl.churchward.ca/2018/06/implementing-moodles-privacy-api-in.html
+     */
+    public static function export_user_data(approved_contextlist $contextlist) {
+        global $DB;
+
+        if (empty($contextlist->count())) {
+            return;
+        }
+
+        $user = $contextlist->get_user();
+
+        [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+
+        $sql = "SELECT cmtt.id,
+                       cmt.name AS conferencename,
+                       cmt.start_time AS conferencestartsat,
+                       cmt.duration AS conferenceduration,
+                       cmtt.token,
+                       cm.id AS cmid
+                  FROM {context} c
+            INNER JOIN {course_modules} cm ON cm.id = c.instanceid AND c.contextlevel = :contextlevel
+            INNER JOIN {modules} m ON m.id = cm.module AND m.name = :modname
+            INNER JOIN {clickmeeting} cmt ON cmt.id = cm.instance
+            INNER JOIN {clickmeeting_tokens} cmtt ON cmtt.clickmeeting_id = cmt.id
+                 WHERE c.id $contextsql
+                       AND cmtt.user_id = :userid
+              ORDER BY cm.id ASC
+        ";
+
+        $params = [
+                'modname' => 'clickmeeting',
+                'contextlevel' => CONTEXT_MODULE,
+                'userid' => $user->id,
+            ] + $contextparams;
+
+        $tokens = $DB->get_recordset_sql($sql, $params);
+        foreach ($tokens as $token) {
+            $context = context_module::instance($token->cmid);
+            $contextdata = helper::get_context_data($context, $user);
+
+            $instancedata = [
+                'name' => $token->conferencename,
+                'start_time' => transform::datetime($token->conferencestartsat),
+                'duration' => $token->conferenceduration,
+                'token' => $token->token,
+            ];
+
+            $contextdata = (object) array_merge((array) $contextdata, $instancedata);
+            writer::with_context($context)->export_data([], $contextdata);
+        }
+
+        $tokens->close();
     }
 
     public static function delete_data_for_all_users_in_context(\context $context)
     {
     }
 
-    public static function delete_data_for_user(approved_contextlist $contextlist)
-    {
+    /**
+     * Delete all user data for the specified user, in the specified contexts.
+     *
+     * @param   approved_contextlist    $contextlist    The approved contexts and user information to delete information for.
+     */
+    public static function delete_data_for_user(approved_contextlist $contextlist) {
+        global $DB;
+
+        if (empty($contextlist->count())) {
+            return;
+        }
+
+        $user = $contextlist->get_user();
+
+        foreach ($contextlist->get_contexts() as $context) {
+            if (!($context instanceof context_module)) {
+                continue;
+            }
+
+            if ($cm = get_coursemodule_from_id('clickmeeting', $context->instanceid)) {
+                $accesstokens = $DB->get_records('clickmeeting_tokens', ['clickmeeting_id' => $cm->instance]);
+                foreach ($accesstokens as $accesstoken) {
+                    $DB->delete_records('clickmeeting_tokens', ['id' => $accesstoken->id, 'user_id' => $user->id]);
+                }
+            }
+        }
     }
 
+    /**
+     * Get the list of users who have data within a context.
+     *
+     * @param   userlist    $userlist   The userlist containing the list of users who have data in this context/plugin combination.
+     */
     public static function get_users_in_context(userlist $userlist)
     {
+        $context = $userlist->get_context();
+
+        if (!($context instanceof context_module)) {
+            return;
+        }
+
+        $params = [
+            'instanceid' => $context->instanceid,
+            'modulename' => 'clickmeeting',
+        ];
+
+        $sql = "SELECT cmtt.userid
+                  FROM {clickmeeting_tokens} cmtt
+                  JOIN {clickmeeting} cmt ON cmtt.clickmeeting_id = cmt.id
+                  JOIN {modules} m ON m.name = :modulename
+                  JOIN {course_modules} cm ON z.id = cm.instance AND m.id = cm.module
+                 WHERE cm.id = :instanceid";
+
+        $userlist->add_from_sql('userid', $sql, $params);
     }
 
     public static function delete_data_for_users(approved_userlist $userlist)

@@ -80,10 +80,5 @@ $string['privacy:metadata:clickmeeting_api'] = 'W celu zachowania poprawnej inte
 $string['privacy:metadata:clickmeeting_api:email'] = 'Adres e-mail jest wysyłany do zewnętrznego systemu w celu poprawnego dołaczenia do wydarzenia';
 $string['privacy:metadata:clickmeeting_api:nickname'] = 'Pełne imię i nazwisko jest wysyłane do zewnętrznego systemu w celu poprawnego dołaczenia do wydarzenia';
 
-$string['privacy:metadata:clickmeeting:name'] = 'Nazwa zajęć lub spotkania';
-$string['privacy:metadata:clickmeeting:description'] = 'Krótki opis spotkania';
-$string['privacy:metadata:clickmeeting:lobbymsg'] = 'Wiadomość widoczna przed rozpoczęciem zajęć';
-$string['privacy:metadata:clickmeeting'] = 'Moduł przechowuje informacje o utworzonym wydarzeniu jak nazwa zajęć czy wiadomość dla oczekujących uczestników';
-
 $string['privacy:metadata:clickmeetingtokens:userid'] = 'Token dostępowy do wydarzenia przechowywany w kontekście użytkownika';
 $string['privacy:metadata:clickmeetingtokens'] = 'Moduł przechowuje listę wygenerowanych tokenów dla uczestników';
