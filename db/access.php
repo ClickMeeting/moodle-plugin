@@ -38,6 +38,18 @@ $capabilities = [
         'clonepermissionsfrom' => 'moodle/course:manageactivities',
     ],
 
+    'mod/clickmeeting:view' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_MODULE,
+        'legacy' => [
+            'guest' => CAP_ALLOW,
+            'student' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
+
     'mod/clickmeeting:host' => [
         'captype' => 'read',
         'contextlevel' => CONTEXT_COURSE,
