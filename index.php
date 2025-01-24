@@ -36,12 +36,12 @@ $course = $DB->get_record('course', ['id' => $id], '*', MUST_EXIST);
 
 require_course_login($course);
 
-$event = \mod_clickmeeting\event\course_module_instance_list_viewed::create([
+$event = mod_clickmeeting\event\course_module_instance_list_viewed::create([
     'context' => context_course::instance($course->id),
 ]);
 $event->trigger();
 
-$coursecontext = context_module::instance($course->id);
+$coursecontext = context_course::instance($course->id);
 
 $PAGE->set_url('/mod/clickmeeting/index.php', ['id' => $id]);
 $PAGE->set_title(format_string($course->fullname));
@@ -54,6 +54,7 @@ if (! $clickmeetings = get_all_instances_in_course('clickmeeting', $course)) {
     notice(get_string('noclickmeetings', 'clickmeeting'), new moodle_url('/course/view.php', ['id' => $course->id]));
 }
 
+$table = new html_table();
 if ($course->format == 'weeks') {
     $table->head  = [get_string('week'), get_string('name')];
     $table->align = ['center', 'left'];
