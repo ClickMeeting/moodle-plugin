@@ -27,8 +27,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename'] = 'Virtual Class';
-$string['modulenameplural'] = 'Virtual Classes';
+$string['modulename'] = 'ClickMeeting';
+$string['modulenameplural'] = 'ClickMeeting';
 $string['modulename_help'] = 'Zaplanuj swoje spotkanie używając aplikacji ClickMeeting. <br /> Aplikacja ClickMeeting pozwala Ci bezpośrednio z platformy Moodle, zaprosić swoich studentów na spotkanie.';
 $string['clickmeetingfieldset'] = 'Custom example fieldset';
 $string['clickmeetingname'] = 'Nazwa konferencji';
