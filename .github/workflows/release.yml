@@ -14,7 +14,9 @@ jobs:
 
       - name: Create ZIP file
         run: |
-          zip -r mod_clickmeeting.zip . -x "*.git*"
+          mkdir mod_clickmeeting
+          cp -R * mod_clickmeeting/ 2>/dev/null || true
+          zip -r mod_clickmeeting.zip mod_clickmeeting -x "*.git*"
 
       - name: Upload Release Asset
         uses: softprops/action-gh-release@v1
