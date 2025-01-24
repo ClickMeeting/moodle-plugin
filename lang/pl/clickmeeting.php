@@ -76,5 +76,9 @@ $string['startdate_booked'] = 'Nie można utworzyć konferencji dla tej daty';
 $string['update_error'] = 'Błąd przy aktualizacji wpisu';
 $string['api_404_error'] = '404 Not Found';
 
-$string['privacy:metadata'] = 'Moduł Virtual Class wyświetla dane tylko z istniejących konferencji';
+$string['privacy:metadata:clickmeeting_api'] = 'W celu zachowania poprawnej integracji z Clickmeeting API, następuje przekazanie danych uczestników do zewnętrznego systemu';
+$string['privacy:metadata:clickmeeting_api:email'] = 'Adres e-mail jest wysyłany do zewnętrznego systemu w celu poprawnego dołaczenia do wydarzenia';
+$string['privacy:metadata:clickmeeting_api:nickname'] = 'Pełne imię i nazwisko jest wysyłane do zewnętrznego systemu w celu poprawnego dołaczenia do wydarzenia';
 
+$string['privacy:metadata:clickmeetingtokens:userid'] = 'Token dostępowy do wydarzenia przechowywany w kontekście użytkownika';
+$string['privacy:metadata:clickmeetingtokens'] = 'Moduł przechowuje listę wygenerowanych tokenów dla uczestników';

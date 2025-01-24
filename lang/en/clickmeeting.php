@@ -76,4 +76,10 @@ $string['startdate_booked'] = 'This start date is already booked';
 $string['update_error'] = 'Error updating record';
 $string['api_404_error'] = '404 Not Found';
 
-$string['privacy:metadata'] = 'The Virtual Class block only displays existing conference data';
+$string['privacy:metadata:clickmeeting_api'] = 'In order to integrate with Clickmeeting API, user data needs to be exchanged with that service.';
+$string['privacy:metadata:clickmeeting_api:email'] = 'The user\'s e-mail address is sent from Moodle to allow you to access virtual classroom on the remote system.';
+$string['privacy:metadata:clickmeeting_api:nickname'] = 'Your full name is sent to the remote system to access virtual classroom on the remote system.';
+
+$string['privacy:metadata:clickmeetingtokens:userid'] = 'Access token is stored in context of user';
+$string['privacy:metadata:clickmeetingtokens'] = 'Plugin stores tokens assigned to particular user';
+
