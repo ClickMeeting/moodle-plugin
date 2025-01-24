@@ -98,10 +98,10 @@ function clickmeeting_check_conference_availability($starttime, $duration, $id =
  * @return string
  */
 function clickmeeting_get_api_key() {
-    global $clickmeetingowner, $DB, $CFG;
+    global $DB, $CFG, $USER;
     require_once($CFG->dirroot.'/user/profile/lib.php');
 
-    $user = $DB->get_record('user', ['id' => $clickmeetingowner]);
+    $user = $DB->get_record('user', ['id' => $USER->id]);
     profile_load_data($user);
 
     if (isset($user->profile_field_clickmeetingapikey) && !empty($user->profile_field_clickmeetingapikey)) {

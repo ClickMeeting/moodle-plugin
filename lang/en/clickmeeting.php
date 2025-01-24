@@ -27,8 +27,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$string['modulename'] = 'Virtual Class';
-$string['modulenameplural'] = 'Virtual Classes';
+$string['modulename'] = 'ClickMeeting';
+$string['modulenameplural'] = 'ClickMeeting';
 $string['modulename_help'] = 'Use the ClickMeeting module to schedule your training. <br /> The ClickMeeting modul allows you to invite your students for training.';
 $string['clickmeetingfieldset'] = 'Custom example fieldset';
 $string['clickmeetingname'] = 'Conference name';
