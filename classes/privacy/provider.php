@@ -108,7 +108,7 @@ class provider implements metadata_provider, request_plugin_provider, core_userl
 
         $sql = "SELECT cmtt.id,
                        cmt.name AS conferencename,
-                       cmt.start_time AS conferencestartsat,
+                       cmt.timestart AS conferencestartsat,
                        cmt.duration AS conferenceduration,
                        cmtt.token,
                        cm.id AS cmid
