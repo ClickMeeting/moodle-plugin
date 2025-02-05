@@ -69,13 +69,13 @@ if ($course->format == 'weeks') {
 foreach ($clickmeetings as $clickmeeting) {
     if (!$clickmeeting->visible) {
         $link = html_writer::link(
-            new moodle_url('/mod/clickmeeting.php', ['id' => $clickmeeting->coursemodule]),
+            new moodle_url('/mod/clickmeeting/view.php', ['id' => $clickmeeting->coursemodule]),
             format_string($clickmeeting->name, true),
             ['class' => 'dimmed']
         );
     } else {
         $link = html_writer::link(
-            new moodle_url('/mod/clickmeeting.php', ['id' => $clickmeeting->coursemodule]),
+            new moodle_url('/mod/clickmeeting/view.php', ['id' => $clickmeeting->coursemodule]),
             format_string($clickmeeting->name, true));
     }
 
