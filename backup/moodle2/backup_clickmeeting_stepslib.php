@@ -47,6 +47,7 @@ class backup_activity_structure_step extends \backup_activity_structure_step {
             'description',
             'lobby_msg',
             'start_time',
+            'access_type',
             'timestart',
             'duration',
         ]);
