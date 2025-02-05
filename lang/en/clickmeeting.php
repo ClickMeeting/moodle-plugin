@@ -34,6 +34,7 @@ $string['clickmeetingfieldset'] = 'Custom example fieldset';
 $string['clickmeetingname'] = 'Conference name';
 $string['clickmeetingname_help'] = 'This is the content of the help tooltip associated with the Clickmeetingname field. Markdown syntax is supported.';
 $string['clickmeeting'] = 'ClickMeeting';
+$string['clickmeeting:view'] = 'View clickmeeting content';
 $string['pluginadministration'] = 'ClickMeeting administration';
 $string['pluginname'] = 'ClickMeeting';
 
