@@ -50,6 +50,7 @@ $clickmeetingowner = $clickmeeting->user_id;
 
 require_login($course, true, $cm);
 $context = context_module::instance($cm->id);
+clickmeeting_page_view($clickmeeting, $course, $cm, $context);
 if (is_siteadmin()) {
     $role = 'host'; // host
 } else if (has_capability('mod/clickmeeting:host', $context)) {
