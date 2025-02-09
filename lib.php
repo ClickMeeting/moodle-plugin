@@ -768,7 +768,7 @@ function clickmeeting_page_view($clickmeeting, $course, $cm, $context) {
 
     $params = array(
         'context' => $context,
-        'objectid' => $clickmeeting->id
+        'objectid' => $clickmeeting->id,
     );
 
     $event = mod_clickmeeting\event\course_module_viewed::create($params);
