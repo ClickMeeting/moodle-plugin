@@ -755,3 +755,29 @@ function clickmeeting_init_curl() {
 
     return $curlhandle;
 }
+
+/**
+ * Mark the activity completed (if required) and trigger the course_module_viewed event.
+ *
+ * @param  stdClass $clickmeeting       clickmeeting object
+ * @param  stdClass $course     course object
+ * @param  stdClass $cm         course module object
+ * @param  stdClass $context    context object
+ */
+function clickmeeting_page_view($clickmeeting, $course, $cm, $context) {
+
+    $params = array(
+        'context' => $context,
+        'objectid' => $clickmeeting->id
+    );
+
+    $event = mod_clickmeeting\event\course_module_viewed::create($params);
+    $event->add_record_snapshot('course_modules', $cm);
+    $event->add_record_snapshot('course', $course);
+    $event->add_record_snapshot('clickmeeting', $clickmeeting);
+    $event->trigger();
+
+    // Completion.
+    $completion = new completion_info($course);
+    $completion->set_module_viewed($cm);
+}
