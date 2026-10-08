@@ -37,4 +37,11 @@ if ($ADMIN->fulltree) {
                                                 get_string('settings:apikey', 'clickmeeting'),
                                                 get_string('settings:apikeydesc', 'clickmeeting'),
                                                 ''));
+
+    $settings->add(new admin_setting_configduration(
+        'clickmeeting/graceperiod',
+        get_string('settings:graceperiod', 'clickmeeting'),
+        get_string('settings:graceperioddesc', 'clickmeeting'),
+        CLICKMEETING_DEFAULT_GRACE_PERIOD
+    ));
 }

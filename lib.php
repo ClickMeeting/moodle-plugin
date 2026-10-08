@@ -30,6 +30,14 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+/**
+ * How long a room outlives its Moodle activity when the admin has not chosen otherwise.
+ *
+ * Roughly five months, which keeps meetings and their recordings reachable in ClickMeeting
+ * well past the point where Moodle itself has forgotten the activity.
+ */
+define('CLICKMEETING_DEFAULT_GRACE_PERIOD', 150 * DAYSECS);
+
 $clickmeetingauthtypes = [
     '1' => 'open',
     '2' => 'password',
@@ -94,18 +102,27 @@ function clickmeeting_check_conference_availability($starttime, $duration, $id =
 }
 
 /**
+ * Returns the API key to talk to ClickMeeting with.
+ *
+ * A room lives on the subaccount that created it, so calls about an existing room must use
+ * its owner's key. $clickmeetingowner carries that owner; it matters most under cron, where
+ * the acting user is nobody in particular and the global key would hit the wrong subaccount.
  *
  * @return string
  */
 function clickmeeting_get_api_key() {
-    global $DB, $CFG, $USER;
-    require_once($CFG->dirroot.'/user/profile/lib.php');
+    global $DB, $CFG, $USER, $clickmeetingowner;
+    require_once($CFG->dirroot . '/user/profile/lib.php');
 
-    $user = $DB->get_record('user', ['id' => $USER->id]);
-    profile_load_data($user);
+    $ownerid = !empty($clickmeetingowner) ? $clickmeetingowner : $USER->id;
+    $user = $DB->get_record('user', ['id' => $ownerid]);
 
-    if (isset($user->profile_field_clickmeetingapikey) && !empty($user->profile_field_clickmeetingapikey)) {
-        return $user->profile_field_clickmeetingapikey;
+    if ($user) {
+        profile_load_data($user);
+
+        if (!empty($user->profile_field_clickmeetingapikey)) {
+            return $user->profile_field_clickmeetingapikey;
+        }
     }
 
     return get_config('clickmeeting', 'apikey');
@@ -429,7 +446,7 @@ function clickmeeting_update_instance(stdClass $clickmeeting, mod_clickmeeting_m
  * @return boolean Success/Failure
  */
 function clickmeeting_delete_instance($id) {
-    global $DB, $COURSE, $clickmeetingowner;
+    global $DB, $clickmeetingowner;
 
     if (! $clickmeeting = $DB->get_record('clickmeeting', ['id' => $id])) {
         return false;
@@ -437,27 +454,52 @@ function clickmeeting_delete_instance($id) {
 
     $clickmeetingowner = $clickmeeting->user_id;
 
-    if (0 < $DB->count_records('clickmeeting_conferences', ['clickmeeting_id' => $clickmeeting->id])) {
-        $conferenceid = $DB->get_field('clickmeeting_conferences', 'conference_id', ['clickmeeting_id' => $clickmeeting->id]);
-    } else {
-        return false;
-    }
+    $conferenceid = $DB->get_field('clickmeeting_conferences', 'conference_id', ['clickmeeting_id' => $clickmeeting->id]);
 
-    $apiresult = clickmeeting_delete_conference($conferenceid);
-
-    if ('"200 OK"' != $apiresult) {
-        // jezeli nie znajdujemy conferencji w clickmeetingu to nie trzeba jej tam usuwac
-        if ('"404 Not Found"' == $apiresult) {
-            throw new \moodle_exception('api_404_error', 'clickmeeting');
-        }
-    }
-
-    if (0 < $DB->count_records('clickmeeting_conferences', ['clickmeeting_id' => $clickmeeting->id])) {
-        $DB->delete_records('clickmeeting_conferences', ['clickmeeting_id' => $clickmeeting->id]);
-    }
+    $DB->delete_records('clickmeeting_conferences', ['clickmeeting_id' => $clickmeeting->id]);
+    // Tokens identify participants, so they must not outlive the activity they were issued for.
+    $DB->delete_records('clickmeeting_tokens', ['clickmeeting_id' => $clickmeeting->id]);
     $DB->delete_records('clickmeeting', ['id' => $clickmeeting->id]);
 
+    // The room itself outlives the activity for the configured grace period. Moodle deletions are
+    // reversible from the recycle bin, and a course copy may still point at this very room, so
+    // destroying it here would take meetings and recordings away from users who never asked for it.
+    if (!empty($conferenceid)) {
+        clickmeeting_schedule_room_deletion($conferenceid, $clickmeeting->user_id);
+    }
+
     return true;
+}
+
+/**
+ * Marks a room for deletion once the grace period has passed.
+ *
+ * Re-scheduling an already pending room restarts its grace period, so the room always
+ * survives for the full period after the last activity pointing at it went away.
+ *
+ * @param int $conferenceid Room id in ClickMeeting.
+ * @param int|null $ownerid User whose API key created the room.
+ */
+function clickmeeting_schedule_room_deletion($conferenceid, $ownerid) {
+    global $DB;
+
+    $DB->delete_records('clickmeeting_pending_deletions', ['conference_id' => $conferenceid]);
+    $DB->insert_record('clickmeeting_pending_deletions', (object) [
+        'conference_id' => $conferenceid,
+        'user_id' => $ownerid,
+        'timescheduled' => time(),
+    ]);
+}
+
+/**
+ * Returns how long a room is kept after its activity was deleted.
+ *
+ * @return int Grace period in seconds.
+ */
+function clickmeeting_get_grace_period() {
+    $graceperiod = (int) get_config('clickmeeting', 'graceperiod');
+
+    return $graceperiod > 0 ? $graceperiod : CLICKMEETING_DEFAULT_GRACE_PERIOD;
 }
 
 /**

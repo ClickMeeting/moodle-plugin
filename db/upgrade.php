@@ -221,6 +221,23 @@ function xmldb_clickmeeting_upgrade($oldversion) {
         upgrade_mod_savepoint(true, 2018101000, 'clickmeeting');
     }
 
+    if ($oldversion < 2026100800) {
+        $table = new xmldb_table('clickmeeting_pending_deletions');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, true, null);
+        $table->add_field('conference_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('user_id', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timescheduled', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_index('conference_id', XMLDB_INDEX_UNIQUE, ['conference_id']);
+        $table->add_index('timescheduled', XMLDB_INDEX_NOTUNIQUE, ['timescheduled']);
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_mod_savepoint(true, 2026100800, 'clickmeeting');
+    }
+
     // And that's all. Please, examine and understand the 3 example blocks above. Also
     // it's interesting to look how other modules are using this script. Remember that
     // the basic idea is to have "blocks" of code (each one being executed only once,
