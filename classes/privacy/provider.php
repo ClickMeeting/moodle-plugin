@@ -39,8 +39,7 @@ use core_privacy\local\request\writer;
 /**
  * Ad hoc task that performs the actions for approved data privacy requests.
  */
-class provider implements metadata_provider, request_plugin_provider, core_userlist_provider {
-
+class provider implements core_userlist_provider, metadata_provider, request_plugin_provider {
     /**
      * Returns metadata about this system.
      *

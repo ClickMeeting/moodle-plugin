@@ -31,7 +31,6 @@ use backup_nested_element;
  * Define the complete choice structure
  */
 class backup_activity_structure_step extends \backup_activity_structure_step {
-
     /**
      * Define the complete structure for backup
      */

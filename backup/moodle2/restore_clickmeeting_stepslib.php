@@ -28,7 +28,6 @@ use restore_path_element;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_activity_structure_step extends \restore_activity_structure_step {
-
     /**
      * Defines table structure
      */
