@@ -25,18 +25,22 @@
 defined('MOODLE_INTERNAL') || die;
 
 if ($ADMIN->fulltree) {
-    require_once(dirname(__FILE__).'/lib.php');
+    require_once(dirname(__FILE__) . '/lib.php');
 
-    $settings->add(new admin_setting_configtext('clickmeeting/apiurl',
-                                                get_string('settings:apiurl', 'clickmeeting'),
-                                                get_string('settings:apiurldesc', 'clickmeeting'),
-                                                'https://api.clickmeeting.com/v1/',
-                                                PARAM_URL));
+    $settings->add(new admin_setting_configtext(
+        'clickmeeting/apiurl',
+        get_string('settings:apiurl', 'clickmeeting'),
+        get_string('settings:apiurldesc', 'clickmeeting'),
+        'https://api.clickmeeting.com/v1/',
+        PARAM_URL
+    ));
 
-    $settings->add(new admin_setting_configtext('clickmeeting/apikey',
-                                                get_string('settings:apikey', 'clickmeeting'),
-                                                get_string('settings:apikeydesc', 'clickmeeting'),
-                                                ''));
+    $settings->add(new admin_setting_configtext(
+        'clickmeeting/apikey',
+        get_string('settings:apikey', 'clickmeeting'),
+        get_string('settings:apikeydesc', 'clickmeeting'),
+        ''
+    ));
 
     $settings->add(new admin_setting_configduration(
         'clickmeeting/graceperiod',

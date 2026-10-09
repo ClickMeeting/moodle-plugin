@@ -96,7 +96,7 @@ function clickmeeting_check_conference_availability($starttime, $duration, $id =
     ];
 
     $curl = clickmeeting_init_curl();
-    $curl->post($apiurl.'conference/availability', $params);
+    $curl->post($apiurl . 'conference/availability', $params);
 
     return 200 === $curl->get_info()['http_code'];
 }
@@ -138,7 +138,7 @@ function clickmeeting_add_conference($params) {
     $apiurl = get_config('clickmeeting', 'apiurl');
 
     $curlhandle = clickmeeting_init_curl();
-    $result = $curlhandle->post($apiurl.'conferences', $params);
+    $result = $curlhandle->post($apiurl . 'conferences', $params);
 
     return $result;
 }
@@ -154,7 +154,7 @@ function clickmeeting_edit_conference($conferenceid, $params) {
     $apiurl = get_config('clickmeeting', 'apiurl');
 
     $curlhandle = clickmeeting_init_curl();
-    $result = $curlhandle->put($apiurl.'conferences/'.$conferenceid, [], ['CURLOPT_POSTFIELDS' => http_build_query($params, '', '&')]);
+    $result = $curlhandle->put($apiurl . 'conferences/' . $conferenceid, [], ['CURLOPT_POSTFIELDS' => http_build_query($params, '', '&')]);
 
     return $result;
 }
@@ -174,7 +174,7 @@ function clickmeeting_edit_conference_title($conferenceid, $title) {
     ];
 
     $curlhandle = clickmeeting_init_curl();
-    $result = $curlhandle->put($apiurl.'conferences/'.$conferenceid, [], ['CURLOPT_POSTFIELDS' => http_build_query($params, '', '&')]);
+    $result = $curlhandle->put($apiurl . 'conferences/' . $conferenceid, [], ['CURLOPT_POSTFIELDS' => http_build_query($params, '', '&')]);
 
     return $result;
 }
@@ -189,7 +189,7 @@ function clickmeeting_delete_conference($conferenceid) {
     $apiurl = get_config('clickmeeting', 'apiurl');
 
     $curlhandle = clickmeeting_init_curl();
-    $result = $curlhandle->delete($apiurl.'conferences/'.$conferenceid);
+    $result = $curlhandle->delete($apiurl . 'conferences/' . $conferenceid);
 
     return $result;
 }
@@ -208,7 +208,7 @@ function clickmeeting_generate_token($roomid) {
     $params['how_many'] = 1;
 
     $curlhandle = clickmeeting_init_curl();
-    $result = $curlhandle->post($apiurl.'conferences/'.$roomid.'/tokens', $params);
+    $result = $curlhandle->post($apiurl . 'conferences/' . $roomid . '/tokens', $params);
     $decoder = json_decode($result, true);
 
     return $decoder['access_tokens'][0]['token'];
@@ -259,7 +259,7 @@ function clickmeeting_get_login_url($roomid, $email, $nickname, $role, $auth, $a
     }
 
     $curlhandle = clickmeeting_init_curl();
-    $result = $curlhandle->post($apiurl.'conferences/'.$roomid.'/room/autologin_hash', $params);
+    $result = $curlhandle->post($apiurl . 'conferences/' . $roomid . '/room/autologin_hash', $params);
     $decoded = json_decode($result, true);
 
     return !empty($decoded['autologin_hash'])
@@ -343,7 +343,7 @@ function clickmeeting_add_instance(stdClass $clickmeeting, mod_clickmeeting_mod_
         $error = '';
         if (!empty($r['code'])) {
             foreach ($r['errors'] as $err) {
-                $error .= $err['message'].'<br />';
+                $error .= $err['message'] . '<br />';
             }
             throw new \moodle_exception($error, 'error');
         }
@@ -425,7 +425,7 @@ function clickmeeting_update_instance(stdClass $clickmeeting, mod_clickmeeting_m
     if (!empty($r['code'])) {
         $error = '';
         foreach ($r['errors'] as $err) {
-            $error .= $err['message'].'<br />';
+            $error .= $err['message'] . '<br />';
         }
         throw new \moodle_exception($error, 'error');
     }
@@ -640,7 +640,7 @@ function clickmeeting_scale_used_anywhere($scaleid) {
  */
 function clickmeeting_grade_item_update(stdClass $clickmeeting) {
     global $CFG, $DB;
-    require_once($CFG->libdir.'/gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
 
     $item = [];
     $item['itemname'] = clean_param($clickmeeting->name, PARAM_NOTAGS);
@@ -683,7 +683,7 @@ function clickmeeting_generate_password($length) {
  */
 function clickmeeting_update_grades(stdClass $clickmeeting, $userid = 0) {
     global $CFG, $DB;
-    require_once($CFG->libdir.'/gradelib.php');
+    require_once($CFG->libdir . '/gradelib.php');
 
     $grades = []; // populate array of grade objects indexed by userid
 
@@ -771,7 +771,7 @@ function clickmeeting_extend_navigation(navigation_node $navref, stdClass $cours
  * @param settings_navigation $settingsnav
  * @param navigation_node $clickmeetingnode
  */
-function clickmeeting_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $clickmeetingnode=null) {
+function clickmeeting_extend_settings_navigation(settings_navigation $settingsnav, navigation_node $clickmeetingnode = null) {
 }
 
 /**
@@ -808,10 +808,10 @@ function clickmeeting_init_curl() {
  */
 function clickmeeting_page_view($clickmeeting, $course, $cm, $context) {
 
-    $params = array(
+    $params = [
         'context' => $context,
         'objectid' => $clickmeeting->id,
-    );
+    ];
 
     $event = mod_clickmeeting\event\course_module_viewed::create($params);
     $event->add_record_snapshot('course_modules', $cm);
