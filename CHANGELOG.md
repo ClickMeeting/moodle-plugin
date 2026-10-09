@@ -32,6 +32,8 @@ on purpose.
 - Event `mod_clickmeeting\event\room_deleted`, logged whenever a room is really deleted, so
   a missing meeting can be traced back to when and why it went away.
 - PHPUnit coverage for the deletion lifecycle.
+- Privacy API support for the new table: the room owner is discoverable and is cleared on an
+  erasure request, while the room itself stays scheduled for deletion.
 
 ### Upgrade notes
 

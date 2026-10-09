@@ -379,4 +379,51 @@ final class lib_test extends \advanced_testcase {
             $this->assertLessThanOrEqual(28, strlen($name), "Table name {$name} is too long for Moodle 4.1.");
         }
     }
+
+    /**
+     * An erasure request must not leave the owner's id behind. The row itself has to stay, or
+     * the room would never be deleted from ClickMeeting - it falls back to the global API key.
+     */
+    public function test_erasure_request_clears_the_room_owner(): void {
+        global $DB;
+
+        $owner = $this->getDataGenerator()->create_user();
+        $DB->insert_record('clickmeeting_room_deletions', (object) [
+            'conference_id' => 777009,
+            'user_id' => $owner->id,
+            'timescheduled' => time(),
+        ]);
+
+        \mod_clickmeeting\privacy\provider::delete_data_for_user(
+            new \core_privacy\local\request\approved_contextlist(
+                $owner,
+                'mod_clickmeeting',
+                [\context_system::instance()->id]
+            )
+        );
+
+        $record = $DB->get_record('clickmeeting_room_deletions', ['conference_id' => 777009]);
+        $this->assertNotFalse($record, 'The room must still be scheduled for deletion.');
+        $this->assertNull($record->user_id);
+    }
+
+    /**
+     * A user known only through a pending room deletion still has to be discoverable, otherwise
+     * their erasure request never reaches that row.
+     */
+    public function test_room_owner_is_found_by_the_privacy_api(): void {
+        global $DB;
+
+        $owner = $this->getDataGenerator()->create_user();
+        $DB->insert_record('clickmeeting_room_deletions', (object) [
+            'conference_id' => 777010,
+            'user_id' => $owner->id,
+            'timescheduled' => time(),
+        ]);
+
+        $contextlist = \mod_clickmeeting\privacy\provider::get_contexts_for_userid($owner->id);
+
+        // Context ids come back from the database as strings, so compare loosely.
+        $this->assertContainsEquals(\context_system::instance()->id, $contextlist->get_contextids());
+    }
 }

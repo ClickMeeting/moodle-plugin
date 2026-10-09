@@ -71,6 +71,8 @@ class provider implements metadata_provider, request_plugin_provider, core_userl
      * @return  contextlist $contextlist The list of contexts used in this plugin.
      */
     public static function get_contexts_for_userid(int $userid): contextlist {
+        global $DB;
+
         $contextlist = new contextlist();
 
         $sql = 'SELECT c.id
@@ -89,6 +91,11 @@ class provider implements metadata_provider, request_plugin_provider, core_userl
         ];
 
         $contextlist->add_from_sql($sql, $params);
+
+        // A pending room deletion outlives its activity, so it belongs to no module context.
+        if ($DB->record_exists('clickmeeting_room_deletions', ['user_id' => $userid])) {
+            $contextlist->add_system_context();
+        }
 
         return $contextlist;
     }
@@ -159,6 +166,12 @@ class provider implements metadata_provider, request_plugin_provider, core_userl
     public static function delete_data_for_all_users_in_context(\context $context): void {
         global $DB;
 
+        if ($context instanceof \context_system) {
+            $DB->set_field_select('clickmeeting_room_deletions', 'user_id', null, 'user_id IS NOT NULL', []);
+
+            return;
+        }
+
         if (!($context instanceof context_module)) {
             return;
         }
@@ -183,6 +196,12 @@ class provider implements metadata_provider, request_plugin_provider, core_userl
         $user = $contextlist->get_user();
 
         foreach ($contextlist->get_contexts() as $context) {
+            if ($context instanceof \context_system) {
+                // Keep the row - the room still has to go - but forget whose it was.
+                $DB->set_field('clickmeeting_room_deletions', 'user_id', null, ['user_id' => $user->id]);
+                continue;
+            }
+
             if (!($context instanceof context_module)) {
                 continue;
             }
@@ -203,6 +222,16 @@ class provider implements metadata_provider, request_plugin_provider, core_userl
      */
     public static function get_users_in_context(userlist $userlist): void {
         $context = $userlist->get_context();
+
+        if ($context instanceof \context_system) {
+            $userlist->add_from_sql(
+                'user_id',
+                'SELECT user_id FROM {clickmeeting_room_deletions} WHERE user_id IS NOT NULL',
+                []
+            );
+
+            return;
+        }
 
         if (!($context instanceof context_module)) {
             return;
@@ -231,6 +260,13 @@ class provider implements metadata_provider, request_plugin_provider, core_userl
     public static function delete_data_for_users(approved_userlist $userlist): void {
         global $DB;
         $context = $userlist->get_context();
+
+        if ($context instanceof \context_system) {
+            [$insql, $inparams] = $DB->get_in_or_equal($userlist->get_userids(), SQL_PARAMS_NAMED);
+            $DB->set_field_select('clickmeeting_room_deletions', 'user_id', null, "user_id $insql", $inparams);
+
+            return;
+        }
 
         if (!($context instanceof context_module)) {
             return;
