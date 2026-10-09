@@ -114,7 +114,7 @@ final class lib_test extends \advanced_testcase {
         $this->assertTrue(clickmeeting_delete_instance($instanceid));
 
         $this->assertFalse($DB->record_exists('clickmeeting', ['id' => $instanceid]));
-        $pending = $DB->get_record('clickmeeting_pending_deletions', ['conference_id' => 777001]);
+        $pending = $DB->get_record('clickmeeting_room_deletions', ['conference_id' => 777001]);
         $this->assertNotFalse($pending, 'Room deletion should have been scheduled.');
         $this->assertEquals($owner->id, $pending->user_id);
     }
@@ -128,7 +128,7 @@ final class lib_test extends \advanced_testcase {
         $this->resetAfterTest();
         set_config('graceperiod', WEEKSECS, 'clickmeeting');
         $owner = $this->getDataGenerator()->create_user();
-        $DB->insert_record('clickmeeting_pending_deletions', (object) [
+        $DB->insert_record('clickmeeting_room_deletions', (object) [
             'conference_id' => 777002,
             'user_id' => $owner->id,
             'timescheduled' => time() - WEEKSECS - 1,
@@ -140,7 +140,7 @@ final class lib_test extends \advanced_testcase {
         $events = $sink->get_events();
         $sink->close();
 
-        $this->assertFalse($DB->record_exists('clickmeeting_pending_deletions', ['conference_id' => 777002]));
+        $this->assertFalse($DB->record_exists('clickmeeting_room_deletions', ['conference_id' => 777002]));
         $this->assertCount(1, $events);
         $this->assertInstanceOf(\mod_clickmeeting\event\room_deleted::class, $events[0]);
         $this->assertEquals(777002, $events[0]->other['conferenceid']);
@@ -156,7 +156,7 @@ final class lib_test extends \advanced_testcase {
         $this->resetAfterTest();
         set_config('graceperiod', WEEKSECS, 'clickmeeting');
         $owner = $this->getDataGenerator()->create_user();
-        $DB->insert_record('clickmeeting_pending_deletions', (object) [
+        $DB->insert_record('clickmeeting_room_deletions', (object) [
             'conference_id' => 777003,
             'user_id' => $owner->id,
             'timescheduled' => time() - DAYSECS,
@@ -168,7 +168,7 @@ final class lib_test extends \advanced_testcase {
         $events = $sink->get_events();
         $sink->close();
 
-        $this->assertTrue($DB->record_exists('clickmeeting_pending_deletions', ['conference_id' => 777003]));
+        $this->assertTrue($DB->record_exists('clickmeeting_room_deletions', ['conference_id' => 777003]));
         $this->assertCount(0, $events);
         $this->assert_api_was_not_called();
     }
@@ -185,7 +185,7 @@ final class lib_test extends \advanced_testcase {
         $course = $this->getDataGenerator()->create_course();
         $owner = $this->getDataGenerator()->create_user();
         $this->create_activity($course->id, 777004, $owner->id);
-        $DB->insert_record('clickmeeting_pending_deletions', (object) [
+        $DB->insert_record('clickmeeting_room_deletions', (object) [
             'conference_id' => 777004,
             'user_id' => $owner->id,
             'timescheduled' => time() - WEEKSECS - 1,
@@ -199,7 +199,7 @@ final class lib_test extends \advanced_testcase {
 
         $this->assertCount(0, $events, 'A room another activity still points at must not be deleted.');
         $this->assert_api_was_not_called();
-        $this->assertFalse($DB->record_exists('clickmeeting_pending_deletions', ['conference_id' => 777004]));
+        $this->assertFalse($DB->record_exists('clickmeeting_room_deletions', ['conference_id' => 777004]));
     }
 
     /**
@@ -223,7 +223,7 @@ final class lib_test extends \advanced_testcase {
         $this->assertTrue(clickmeeting_delete_instance($instanceid));
 
         $this->assertFalse($DB->record_exists('clickmeeting', ['id' => $instanceid]));
-        $this->assertEquals(0, $DB->count_records('clickmeeting_pending_deletions'));
+        $this->assertEquals(0, $DB->count_records('clickmeeting_room_deletions'));
     }
 
     /**
@@ -234,7 +234,7 @@ final class lib_test extends \advanced_testcase {
 
         set_config('graceperiod', WEEKSECS, 'clickmeeting');
         $owner = $this->getDataGenerator()->create_user();
-        $DB->insert_record('clickmeeting_pending_deletions', (object) [
+        $DB->insert_record('clickmeeting_room_deletions', (object) [
             'conference_id' => 777005,
             'user_id' => $owner->id,
             'timescheduled' => time() - WEEKSECS - 1,
@@ -246,7 +246,7 @@ final class lib_test extends \advanced_testcase {
         $events = $sink->get_events();
         $sink->close();
 
-        $this->assertFalse($DB->record_exists('clickmeeting_pending_deletions', ['conference_id' => 777005]));
+        $this->assertFalse($DB->record_exists('clickmeeting_room_deletions', ['conference_id' => 777005]));
         $this->assertCount(0, $events, 'Nothing was deleted, so no deletion should be reported.');
     }
 
@@ -258,7 +258,7 @@ final class lib_test extends \advanced_testcase {
 
         set_config('graceperiod', WEEKSECS, 'clickmeeting');
         $owner = $this->getDataGenerator()->create_user();
-        $DB->insert_record('clickmeeting_pending_deletions', (object) [
+        $DB->insert_record('clickmeeting_room_deletions', (object) [
             'conference_id' => 777006,
             'user_id' => $owner->id,
             'timescheduled' => time() - WEEKSECS - 1,
@@ -267,7 +267,7 @@ final class lib_test extends \advanced_testcase {
 
         $output = $this->run_purge_task();
 
-        $this->assertTrue($DB->record_exists('clickmeeting_pending_deletions', ['conference_id' => 777006]));
+        $this->assertTrue($DB->record_exists('clickmeeting_room_deletions', ['conference_id' => 777006]));
         $this->assertStringContainsString('will retry', $output);
     }
 
@@ -341,14 +341,14 @@ final class lib_test extends \advanced_testcase {
         clickmeeting_schedule_room_deletion(777008, $owner->id);
         clickmeeting_schedule_room_deletion(777008, $owner->id);
 
-        $this->assertEquals(1, $DB->count_records('clickmeeting_pending_deletions', ['conference_id' => 777008]));
+        $this->assertEquals(1, $DB->count_records('clickmeeting_room_deletions', ['conference_id' => 777008]));
     }
 
     /**
      * The pending deletions table stores who owned a room, which is personal data and has to
      * be declared - Moodle's own privacy checks do not catch a "user_id" column on their own.
      */
-    public function test_pending_deletions_table_is_declared_to_the_privacy_api(): void {
+    public function test_room_deletions_table_is_declared_to_the_privacy_api(): void {
         $collection = \mod_clickmeeting\privacy\provider::get_metadata(
             new \core_privacy\local\metadata\collection('mod_clickmeeting')
         );
@@ -360,6 +360,23 @@ final class lib_test extends \advanced_testcase {
             }
         }
 
-        $this->assertContains('clickmeeting_pending_deletions', $tables);
+        $this->assertContains('clickmeeting_room_deletions', $tables);
+    }
+
+    /**
+     * Moodle rejects table names longer than 28 characters on 4.1 and earlier, which this
+     * plugin still supports. The limit was raised later, so a name that installs fine on 4.5
+     * can still break every older site.
+     */
+    public function test_table_names_fit_the_moodle_name_limit(): void {
+        global $CFG;
+
+        $xml = simplexml_load_file($CFG->dirroot . '/mod/clickmeeting/db/install.xml');
+
+        $this->assertNotFalse($xml, 'install.xml should be readable.');
+        foreach ($xml->TABLES->TABLE as $table) {
+            $name = (string) $table['NAME'];
+            $this->assertLessThanOrEqual(28, strlen($name), "Table name {$name} is too long for Moodle 4.1.");
+        }
     }
 }

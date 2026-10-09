@@ -45,7 +45,7 @@ class purge_deleted_rooms extends \core\task\scheduled_task {
 
         $cutoff = time() - clickmeeting_get_grace_period();
         $pending = $DB->get_records_select(
-            'clickmeeting_pending_deletions',
+            'clickmeeting_room_deletions',
             'timescheduled <= :cutoff',
             ['cutoff' => $cutoff]
         );
@@ -55,7 +55,7 @@ class purge_deleted_rooms extends \core\task\scheduled_task {
             // bin - points at this room again, so deleting it would take the meeting away from them.
             if ($DB->record_exists('clickmeeting_conferences', ['conference_id' => $record->conference_id])) {
                 mtrace("Room {$record->conference_id} is in use again, cancelling its deletion.");
-                $DB->delete_records('clickmeeting_pending_deletions', ['id' => $record->id]);
+                $DB->delete_records('clickmeeting_room_deletions', ['id' => $record->id]);
                 continue;
             }
 
@@ -69,7 +69,7 @@ class purge_deleted_rooms extends \core\task\scheduled_task {
                 continue;
             }
 
-            $DB->delete_records('clickmeeting_pending_deletions', ['id' => $record->id]);
+            $DB->delete_records('clickmeeting_room_deletions', ['id' => $record->id]);
 
             if ('"200 OK"' === $apiresult) {
                 room_deleted::create([

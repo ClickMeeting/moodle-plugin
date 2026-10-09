@@ -56,7 +56,7 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
-    <TABLE NAME="clickmeeting_pending_deletions" COMMENT="Rooms awaiting deletion in ClickMeeting after their Moodle activity was removed">
+    <TABLE NAME="clickmeeting_room_deletions" COMMENT="Rooms awaiting deletion in ClickMeeting after their Moodle activity was removed">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="conference_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>

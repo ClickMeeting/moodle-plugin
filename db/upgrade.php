@@ -222,7 +222,7 @@ function xmldb_clickmeeting_upgrade($oldversion) {
     }
 
     if ($oldversion < 2026100800) {
-        $table = new xmldb_table('clickmeeting_pending_deletions');
+        $table = new xmldb_table('clickmeeting_room_deletions');
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, true, null);
         $table->add_field('conference_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
         $table->add_field('user_id', XMLDB_TYPE_INTEGER, '10', null, null, null, null);

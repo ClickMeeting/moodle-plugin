@@ -483,8 +483,8 @@ function clickmeeting_delete_instance($id) {
 function clickmeeting_schedule_room_deletion($conferenceid, $ownerid) {
     global $DB;
 
-    $DB->delete_records('clickmeeting_pending_deletions', ['conference_id' => $conferenceid]);
-    $DB->insert_record('clickmeeting_pending_deletions', (object) [
+    $DB->delete_records('clickmeeting_room_deletions', ['conference_id' => $conferenceid]);
+    $DB->insert_record('clickmeeting_room_deletions', (object) [
         'conference_id' => $conferenceid,
         'user_id' => $ownerid,
         'timescheduled' => time(),

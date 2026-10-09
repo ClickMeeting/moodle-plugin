@@ -35,5 +35,5 @@ on purpose.
 
 ### Upgrade notes
 
-Adds the table `clickmeeting_pending_deletions`. Existing data is untouched. Rooms already
+Adds the table `clickmeeting_room_deletions`. Existing data is untouched. Rooms already
 deleted before this release cannot be recovered.

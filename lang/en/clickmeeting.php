@@ -89,5 +89,5 @@ $string['settings:graceperiod'] = 'Keep deleted rooms for';
 $string['settings:graceperioddesc'] = 'How long a ClickMeeting room survives after its Moodle activity was deleted. During this time the meeting and its recordings stay reachable in ClickMeeting, and restoring the activity from the recycle bin reconnects it to the same room. Set to zero to use the default of five months.';
 $string['task:purgedeletedrooms'] = 'Delete ClickMeeting rooms past their grace period';
 $string['event:roomdeleted'] = 'ClickMeeting room deleted';
-$string['privacy:metadata:clickmeetingpendingdeletions'] = 'Plugin remembers which rooms are awaiting deletion in ClickMeeting.';
-$string['privacy:metadata:clickmeetingpendingdeletions:userid'] = 'The owner of the room is kept so that the deletion uses their API key.';
+$string['privacy:metadata:clickmeetingroomdeletions'] = 'Plugin remembers which rooms are awaiting deletion in ClickMeeting.';
+$string['privacy:metadata:clickmeetingroomdeletions:userid'] = 'The owner of the room is kept so that the deletion uses their API key.';
