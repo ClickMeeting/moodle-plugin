@@ -15,24 +15,23 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Defines the version of clickmeeting
- *
- * This code fragment is called by moodle_needs_upgrading() and
- * /admin/index.php
+ * Scheduled task definitions for mod_clickmeeting.
  *
  * @package    mod_clickmeeting
- * @copyright  2024 Clickmeeting
+ * @copyright  2026 Clickmeeting
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2026100800;
-$plugin->requires = 2013111811.01; // Requires this Moodle 2.6 version.
-// Branches this release is actually tested against: 3.9 LTS through 5.3. This is advisory -
-// it tells the plugins directory and the admin UI what we stand behind, without blocking
-// installation anywhere $plugin->requires allows it.
-$plugin->supported = [39, 503];
-$plugin->maturity = MATURITY_STABLE;
-$plugin->cron = 0;
-$plugin->component = 'mod_clickmeeting';
+$tasks = [
+    [
+        'classname' => 'mod_clickmeeting\task\purge_deleted_rooms',
+        'blocking' => 0,
+        'minute' => '20',
+        'hour' => '3',
+        'day' => '*',
+        'dayofweek' => '*',
+        'month' => '*',
+    ],
+];

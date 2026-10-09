@@ -56,5 +56,20 @@
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
       </KEYS>
     </TABLE>
+    <TABLE NAME="clickmeeting_room_deletions" COMMENT="Rooms awaiting deletion in ClickMeeting after their Moodle activity was removed">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="conference_id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false"/>
+        <FIELD NAME="user_id" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Owner of the room, used to pick the right API key"/>
+        <FIELD NAME="timescheduled" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="conference_id" UNIQUE="true" FIELDS="conference_id"/>
+        <INDEX NAME="timescheduled" UNIQUE="false" FIELDS="timescheduled"/>
+      </INDEXES>
+    </TABLE>
   </TABLES>
 </XMLDB>

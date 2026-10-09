@@ -4,22 +4,28 @@ on:
   release:
     types: [created]
 
+# Publishing the release asset is the only thing this workflow needs to write.
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      # Checking out straight into the plugin directory name gives the ZIP its required
+      # layout without copying, which previously nested a partial copy of the plugin
+      # inside itself because the glob already matched the freshly created directory.
+      - name: Check out into the plugin directory
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          path: mod_clickmeeting
 
       - name: Create ZIP file
-        run: |
-          mkdir mod_clickmeeting
-          cp -R * mod_clickmeeting/ 2>/dev/null || true
-          zip -r mod_clickmeeting.zip mod_clickmeeting -x "*.git*"
+        run: zip -r mod_clickmeeting.zip mod_clickmeeting -x "*.git*"
 
       - name: Upload Release Asset
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65 # v2.6.2
         with:
           files: mod_clickmeeting.zip
         env:
