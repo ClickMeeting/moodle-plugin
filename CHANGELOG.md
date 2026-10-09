@@ -35,6 +35,12 @@ on purpose.
 - Privacy API support for the new table: the room owner is discoverable and is cleared on an
   erasure request, while the room itself stays scheduled for deletion.
 
+### Compatibility
+
+Declares `$plugin->supported = [39, 503]`: Moodle 3.9 LTS through 5.3, each verified with a
+clean install and a v1.1.5 upgrade. This is advisory - it does not block installation - and
+makes the plugin show as compatible for Moodle 5.x in the plugins directory.
+
 ### Upgrade notes
 
 Adds the table `clickmeeting_room_deletions`. Existing data is untouched. Rooms already
