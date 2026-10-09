@@ -51,9 +51,9 @@ class provider implements core_userlist_provider, metadata_provider, request_plu
             'user_id' => 'privacy:metadata:clickmeetingtokens:userid',
         ], 'privacy:metadata:clickmeetingtokens');
 
-        $collection->add_database_table('clickmeeting_pending_deletions', [
-            'user_id' => 'privacy:metadata:clickmeetingpendingdeletions:userid',
-        ], 'privacy:metadata:clickmeetingpendingdeletions');
+        $collection->add_database_table('clickmeeting_room_deletions', [
+            'user_id' => 'privacy:metadata:clickmeetingroomdeletions:userid',
+        ], 'privacy:metadata:clickmeetingroomdeletions');
 
         $collection->add_external_location_link('clickmeeting.com', [
             'email' => 'privacy:metadata:clickmeeting_api:email',

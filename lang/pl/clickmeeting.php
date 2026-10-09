@@ -88,5 +88,5 @@ $string['settings:graceperiod'] = 'Przechowuj usunięte pokoje przez';
 $string['settings:graceperioddesc'] = 'Jak długo pokój ClickMeeting istnieje po usunięciu powiązanej aktywności w Moodle. Przez ten czas wydarzenie i jego nagrania pozostają dostępne w ClickMeeting, a przywrócenie aktywności z kosza podłącza ją z powrotem do tego samego pokoju. Wartość zero oznacza domyślne pięć miesięcy.';
 $string['task:purgedeletedrooms'] = 'Usuwanie pokoi ClickMeeting po okresie karencji';
 $string['event:roomdeleted'] = 'Usunięto pokój ClickMeeting';
-$string['privacy:metadata:clickmeetingpendingdeletions'] = 'Moduł przechowuje informację o pokojach oczekujących na usunięcie w ClickMeeting.';
-$string['privacy:metadata:clickmeetingpendingdeletions:userid'] = 'Właściciel pokoju jest zapamiętywany, aby usunięcie wykonać jego kluczem API.';
+$string['privacy:metadata:clickmeetingroomdeletions'] = 'Moduł przechowuje informację o pokojach oczekujących na usunięcie w ClickMeeting.';
+$string['privacy:metadata:clickmeetingroomdeletions:userid'] = 'Właściciel pokoju jest zapamiętywany, aby usunięcie wykonać jego kluczem API.';
