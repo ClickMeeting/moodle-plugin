@@ -10,7 +10,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Create ZIP file
         run: |
@@ -19,7 +19,7 @@ jobs:
           zip -r mod_clickmeeting.zip mod_clickmeeting -x "*.git*"
 
       - name: Upload Release Asset
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: mod_clickmeeting.zip
         env:
