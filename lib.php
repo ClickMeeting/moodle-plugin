@@ -154,7 +154,9 @@ function clickmeeting_edit_conference($conferenceid, $params) {
     $apiurl = get_config('clickmeeting', 'apiurl');
 
     $curlhandle = clickmeeting_init_curl();
-    $result = $curlhandle->put($apiurl . 'conferences/' . $conferenceid, [], ['CURLOPT_POSTFIELDS' => http_build_query($params, '', '&')]);
+    // The body goes in as the second argument: curl::put() overwrites the postfields option with
+    // whatever it finds there, so passing the body through the options would send an empty request.
+    $result = $curlhandle->put($apiurl . 'conferences/' . $conferenceid, http_build_query($params, '', '&'));
 
     return $result;
 }
@@ -174,7 +176,7 @@ function clickmeeting_edit_conference_title($conferenceid, $title) {
     ];
 
     $curlhandle = clickmeeting_init_curl();
-    $result = $curlhandle->put($apiurl . 'conferences/' . $conferenceid, [], ['CURLOPT_POSTFIELDS' => http_build_query($params, '', '&')]);
+    $result = $curlhandle->put($apiurl . 'conferences/' . $conferenceid, http_build_query($params, '', '&'));
 
     return $result;
 }

@@ -27,7 +27,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2026101300;
+$plugin->version = 2026101301;
 $plugin->requires = 2013111811.01; // Requires this Moodle 2.6 version.
 // Branches this release is actually tested against: 3.9 LTS through 5.3. This is advisory -
 // it tells the plugins directory and the admin UI what we stand behind, without blocking
