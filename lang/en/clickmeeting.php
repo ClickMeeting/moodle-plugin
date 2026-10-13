@@ -75,6 +75,7 @@ $string['clickmeeting:presenter'] = 'Presenter';
 
 $string['startdate_booked'] = 'This start date is already booked';
 $string['update_error'] = 'Error updating record';
+$string['cannotcreateroom'] = 'Could not create a ClickMeeting room for the restored activity';
 $string['api_404_error'] = '404 Not Found';
 
 $string['privacy:metadata:clickmeeting_api'] = 'In order to integrate with Clickmeeting API, user data needs to be exchanged with that service.';

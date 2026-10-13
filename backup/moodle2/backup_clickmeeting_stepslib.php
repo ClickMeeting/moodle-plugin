@@ -44,6 +44,7 @@ class backup_activity_structure_step extends \backup_activity_structure_step {
             'course',
             'name',
             'description',
+            'room_type',
             'lobby_msg',
             'start_time',
             'access_type',

@@ -75,6 +75,7 @@ $string['clickmeeting:presenter'] = 'Prezenter';
 
 $string['startdate_booked'] = 'Nie można utworzyć konferencji dla tej daty';
 $string['update_error'] = 'Błąd przy aktualizacji wpisu';
+$string['cannotcreateroom'] = 'Nie udało się utworzyć pokoju ClickMeeting dla przywracanej aktywności';
 $string['api_404_error'] = '404 Not Found';
 
 $string['privacy:metadata:clickmeeting_api'] = 'W celu zachowania poprawnej integracji z Clickmeeting API, następuje przekazanie danych uczestników do zewnętrznego systemu';
