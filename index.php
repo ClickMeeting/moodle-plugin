@@ -27,8 +27,8 @@
 
 // Replace clickmeeting with the name of your module and remove this line
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/lib.php');
 
 $id = required_param('id', PARAM_INT);   // course
 
@@ -76,7 +76,8 @@ foreach ($clickmeetings as $clickmeeting) {
     } else {
         $link = html_writer::link(
             new moodle_url('/mod/clickmeeting/view.php', ['id' => $clickmeeting->coursemodule]),
-            format_string($clickmeeting->name, true));
+            format_string($clickmeeting->name, true)
+        );
     }
 
     if ($course->format == 'weeks' || $course->format == 'topics') {

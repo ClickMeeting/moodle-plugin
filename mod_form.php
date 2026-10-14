@@ -27,13 +27,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once($CFG->dirroot . '/course/moodleform_mod.php');
 
 /**
  * Module instance settings form
  */
 class mod_clickmeeting_mod_form extends moodleform_mod {
-
     /**
      * Defines webinar open to all
      */
@@ -71,7 +70,7 @@ class mod_clickmeeting_mod_form extends moodleform_mod {
 
             $conferencestarttime = required_param('start_time', PARAM_TEXT);
             $conferenceduration = required_param('duration', PARAM_INT);
-            if (clickmeeting_check_conference_availability($conferencestarttime, $conferenceduration,  $conferenceid)) {
+            if (clickmeeting_check_conference_availability($conferencestarttime, $conferenceduration, $conferenceid)) {
                 http_response_code(200);
                 echo 'SUCCESS';
             } else {

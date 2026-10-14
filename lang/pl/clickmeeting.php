@@ -75,6 +75,7 @@ $string['clickmeeting:presenter'] = 'Prezenter';
 
 $string['startdate_booked'] = 'Nie można utworzyć konferencji dla tej daty';
 $string['update_error'] = 'Błąd przy aktualizacji wpisu';
+$string['cannotcreateroom'] = 'Nie udało się utworzyć pokoju ClickMeeting dla przywracanej aktywności';
 $string['api_404_error'] = '404 Not Found';
 
 $string['privacy:metadata:clickmeeting_api'] = 'W celu zachowania poprawnej integracji z Clickmeeting API, następuje przekazanie danych uczestników do zewnętrznego systemu';
@@ -83,3 +84,10 @@ $string['privacy:metadata:clickmeeting_api:nickname'] = 'Pełne imię i nazwisko
 
 $string['privacy:metadata:clickmeetingtokens:userid'] = 'Token dostępowy do wydarzenia przechowywany w kontekście użytkownika';
 $string['privacy:metadata:clickmeetingtokens'] = 'Moduł przechowuje listę wygenerowanych tokenów dla uczestników';
+
+$string['settings:graceperiod'] = 'Przechowuj usunięte pokoje przez';
+$string['settings:graceperioddesc'] = 'Jak długo pokój ClickMeeting istnieje po usunięciu powiązanej aktywności w Moodle. Przez ten czas wydarzenie i jego nagrania pozostają dostępne w ClickMeeting, a przywrócenie aktywności z kosza podłącza ją z powrotem do tego samego pokoju. Wartość zero oznacza domyślne pięć miesięcy.';
+$string['task:purgedeletedrooms'] = 'Usuwanie pokoi ClickMeeting po okresie karencji';
+$string['event:roomdeleted'] = 'Usunięto pokój ClickMeeting';
+$string['privacy:metadata:clickmeetingroomdeletions'] = 'Moduł przechowuje informację o pokojach oczekujących na usunięcie w ClickMeeting.';
+$string['privacy:metadata:clickmeetingroomdeletions:userid'] = 'Właściciel pokoju jest zapamiętywany, aby usunięcie wykonać jego kluczem API.';

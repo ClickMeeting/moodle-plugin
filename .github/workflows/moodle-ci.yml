@@ -2,13 +2,17 @@ name: Moodle Plugin CI
 
 on: [push, pull_request]
 
+# Nothing here writes to the repository.
+permissions:
+  contents: read
+
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     services:
       postgres:
-        image: postgres:15
+        image: postgres:17
         env:
           POSTGRES_USER: 'postgres'
           POSTGRES_HOST_AUTH_METHOD: 'trust'
@@ -17,7 +21,7 @@ jobs:
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 3
 
       mariadb:
-        image: mariadb:10.11
+        image: mariadb:11.4
         env:
           MYSQL_USER: 'root'
           MYSQL_ALLOW_EMPTY_PASSWORD: "true"
@@ -25,43 +29,49 @@ jobs:
           MYSQL_COLLATION_SERVER: "utf8mb4_unicode_ci"
         ports:
           - 3306:3306
-        options: --health-cmd="mysqladmin ping" --health-interval 10s --health-timeout 5s --health-retries 3
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval 10s --health-timeout 5s --health-retries 5
 
     strategy:
       fail-fast: false
       matrix:
+        # Each Moodle branch is paired only with PHP versions it actually supports, so a red
+        # job means the plugin is broken rather than the combination being impossible.
         include:
-          # Moodle 4.0.1 - PHP 7.4, 8.0, 8.1
-          - php: '7.4'
-            moodle-branch: 'MOODLE_401_STABLE'
-            database: pgsql
-          - php: '8.0'
+          # Moodle 4.1 LTS - oldest release this plugin is tested against.
+          - php: '8.1'
             moodle-branch: 'MOODLE_401_STABLE'
             database: pgsql
           - php: '8.1'
             moodle-branch: 'MOODLE_401_STABLE'
-            database: pgsql
-          - php: '7.4'
-            moodle-branch: 'MOODLE_401_STABLE'
             database: mariadb
-          - php: '8.0'
-            moodle-branch: 'MOODLE_401_STABLE'
-            database: mariadb
-          - php: '8.1'
-            moodle-branch: 'MOODLE_401_STABLE'
-            database: mariadb
-          # Moodle 4.0.5 - 8.1, 8.2
+          # Moodle 4.5 LTS - what the plugins directory currently advertises.
           - php: '8.1'
             moodle-branch: 'MOODLE_405_STABLE'
             database: pgsql
+          - php: '8.3'
+            moodle-branch: 'MOODLE_405_STABLE'
+            database: mariadb
+          # Moodle 5.0
           - php: '8.2'
-            moodle-branch: 'MOODLE_405_STABLE'
+            moodle-branch: 'MOODLE_500_STABLE'
             database: pgsql
-          - php: '8.1'
-            moodle-branch: 'MOODLE_405_STABLE'
+          - php: '8.3'
+            moodle-branch: 'MOODLE_500_STABLE'
             database: mariadb
-          - php: '8.2'
-            moodle-branch: 'MOODLE_405_STABLE'
+          # Moodle 5.1 - first release with the public/ directory layout.
+          - php: '8.3'
+            moodle-branch: 'MOODLE_501_STABLE'
+            database: pgsql
+          # Moodle 5.2
+          - php: '8.3'
+            moodle-branch: 'MOODLE_502_STABLE'
+            database: mariadb
+          # Moodle 5.3 - latest release.
+          - php: '8.3'
+            moodle-branch: 'MOODLE_503_STABLE'
+            database: pgsql
+          - php: '8.3'
+            moodle-branch: 'MOODLE_503_STABLE'
             database: mariadb
 
     steps:

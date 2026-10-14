@@ -68,7 +68,6 @@ function xmldb_clickmeeting_upgrade($oldversion) {
 
     // First example, some fields were added to install.xml on 2007/04/01
     if ($oldversion < 2007040100) {
-
         // Define field course to be added to clickmeeting
         $table = new xmldb_table('clickmeeting');
         $field = new xmldb_field('course', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'id');
@@ -89,8 +88,16 @@ function xmldb_clickmeeting_upgrade($oldversion) {
 
         // Define field introformat to be added to clickmeeting
         $table = new xmldb_table('clickmeeting');
-        $field = new xmldb_field('introformat', XMLDB_TYPE_INTEGER, '4', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0',
-            'intro');
+        $field = new xmldb_field(
+            'introformat',
+            XMLDB_TYPE_INTEGER,
+            '4',
+            XMLDB_UNSIGNED,
+            XMLDB_NOTNULL,
+            null,
+            '0',
+            'intro'
+        );
 
         // Add field introformat
         if (!$dbman->field_exists($table, $field)) {
@@ -106,11 +113,18 @@ function xmldb_clickmeeting_upgrade($oldversion) {
     // two more fields and one index were added to install.xml (note the micro increment
     // "01" in the last two digits of the version
     if ($oldversion < 2007040101) {
-
         // Define field timecreated to be added to clickmeeting
         $table = new xmldb_table('clickmeeting');
-        $field = new xmldb_field('timecreated', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0',
-            'introformat');
+        $field = new xmldb_field(
+            'timecreated',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            XMLDB_UNSIGNED,
+            XMLDB_NOTNULL,
+            null,
+            '0',
+            'introformat'
+        );
 
         // Add field timecreated
         if (!$dbman->field_exists($table, $field)) {
@@ -119,8 +133,16 @@ function xmldb_clickmeeting_upgrade($oldversion) {
 
         // Define field timemodified to be added to clickmeeting
         $table = new xmldb_table('clickmeeting');
-        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0',
-            'timecreated');
+        $field = new xmldb_field(
+            'timemodified',
+            XMLDB_TYPE_INTEGER,
+            '10',
+            XMLDB_UNSIGNED,
+            XMLDB_NOTNULL,
+            null,
+            '0',
+            'timecreated'
+        );
 
         // Add field timemodified
         if (!$dbman->field_exists($table, $field)) {
@@ -143,14 +165,12 @@ function xmldb_clickmeeting_upgrade($oldversion) {
     // Third example, the next day, 2007/04/02 (with the trailing 00), some actions were performed to install.php,
     // related with the module
     if ($oldversion < 2007040200) {
-
         // insert here code to perform some actions (same as in install.php)
 
         upgrade_mod_savepoint(true, 2007040200, 'clickmeeting');
     }
 
     if ($oldversion < 2018101000) {
-
         $table = new xmldb_table('clickmeeting');
         $field = new xmldb_field('user_id', XMLDB_TYPE_INTEGER, '10', XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'description');
 
@@ -219,6 +239,23 @@ function xmldb_clickmeeting_upgrade($oldversion) {
         $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
 
         upgrade_mod_savepoint(true, 2018101000, 'clickmeeting');
+    }
+
+    if ($oldversion < 2026100800) {
+        $table = new xmldb_table('clickmeeting_room_deletions');
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, true, null);
+        $table->add_field('conference_id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('user_id', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+        $table->add_field('timescheduled', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_index('conference_id', XMLDB_INDEX_UNIQUE, ['conference_id']);
+        $table->add_index('timescheduled', XMLDB_INDEX_NOTUNIQUE, ['timescheduled']);
+
+        if (!$dbman->table_exists($table)) {
+            $dbman->create_table($table);
+        }
+
+        upgrade_mod_savepoint(true, 2026100800, 'clickmeeting');
     }
 
     // And that's all. Please, examine and understand the 3 example blocks above. Also

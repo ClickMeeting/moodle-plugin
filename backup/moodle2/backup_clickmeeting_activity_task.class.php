@@ -28,7 +28,6 @@ use mod_clickmeeting\backup_activity_structure_step;
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class backup_clickmeeting_activity_task extends backup_activity_task {
-
     /**
      * Define (add) particular settings this activity can have
      */

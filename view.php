@@ -25,8 +25,8 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/lib.php');
 
 $id = optional_param('id', 0, PARAM_INT); // course_module ID, or
 $n  = optional_param('n', 0, PARAM_INT);  // clickmeeting instance ID - it should be named as the first character of the module
@@ -100,22 +100,22 @@ $loginhash = clickmeeting_get_login_url($conference->conference_id, $USER->email
 // Output starts here
 echo $OUTPUT->header();
 
-echo '<b style="font-size: 110%;">'.get_string('view:room_name', 'clickmeeting').': </b>'.$clickmeeting->name;
+echo '<b style="font-size: 110%;">' . get_string('view:room_name', 'clickmeeting') . ': </b>' . $clickmeeting->name;
 echo '<br /><br />';
 
 if (!clickmeeting_is_room_historical($conference->conference_id)) {
-    $timestamp = strtotime('+'.$clickmeeting->duration.' hours', $clickmeeting->timestart);
-    echo '<b style="font-size: 110%;">'.get_string('view:room_date', 'clickmeeting').': </b>'.$clickmeeting->start_time.' - '.date('Y-m-d H:i:s', $timestamp);
+    $timestamp = strtotime('+' . $clickmeeting->duration . ' hours', $clickmeeting->timestart);
+    echo '<b style="font-size: 110%;">' . get_string('view:room_date', 'clickmeeting') . ': </b>' . $clickmeeting->start_time . ' - ' . date('Y-m-d H:i:s', $timestamp);
     echo '<br /><br />';
-    echo '<b style="font-size: 110%;">'.get_string('view:room_description', 'clickmeeting').': </b>'.$clickmeeting->description;
+    echo '<b style="font-size: 110%;">' . get_string('view:room_description', 'clickmeeting') . ': </b>' . $clickmeeting->description;
     echo '<br /><br />';
     if (clickmeeting_is_password_protected($clickmeeting)) {
-        echo '<b style="font-size: 110%;">'.get_string('view:password', 'clickmeeting').': </b>'.$conference->password;
+        echo '<b style="font-size: 110%;">' . get_string('view:password', 'clickmeeting') . ': </b>' . $conference->password;
         echo '<br /><br />';
     }
     $loginurl = sprintf('%s?l=%s', $conference->room_url, $loginhash);
     echo '<div style="text-align: center;" class="bt-green">';
-    echo '<a class="enter_meeting" href="'.$loginurl.'" target="_blank">'.get_string('view:joinmeeting', 'clickmeeting').'</a>';
+    echo '<a class="enter_meeting" href="' . $loginurl . '" target="_blank">' . get_string('view:joinmeeting', 'clickmeeting') . '</a>';
     echo '</div>';
 } else {
     echo '<b style="font-size: 110%;">' . get_string('view:oldmeeting', 'clickmeeting') . '</b>';

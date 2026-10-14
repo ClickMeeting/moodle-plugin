@@ -29,7 +29,6 @@ use mod_clickmeeting\restore_activity_structure_step;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class restore_clickmeeting_activity_task extends restore_activity_task {
-
     /**
      * Define (add) particular settings this activity can have
      */
@@ -68,7 +67,6 @@ class restore_clickmeeting_activity_task extends restore_activity_task {
         $rules[] = new restore_decode_rule('CLICKMEETINGINDEX', '/mod/clickmeeting/index.php?id=$1', 'course');
 
         return $rules;
-
     }
 
     /**
@@ -104,11 +102,17 @@ class restore_clickmeeting_activity_task extends restore_activity_task {
         $rules = [];
 
         // Fix old wrong uses (missing extension)
-        $rules[] = new restore_log_rule('clickmeeting', 'view all', 'index?id={course}', null,
-            null, null, 'index.php?id={course}');
+        $rules[] = new restore_log_rule(
+            'clickmeeting',
+            'view all',
+            'index?id={course}',
+            null,
+            null,
+            null,
+            'index.php?id={course}'
+        );
         $rules[] = new restore_log_rule('clickmeeting', 'view all', 'index.php?id={course}', null);
 
         return $rules;
     }
-
 }
