@@ -1,6 +1,6 @@
 # Changelog
 
-## v1.2.0 (2026-10-08)
+## v1.2.0 (2026-10-14)
 
 Fixes meetings and recordings disappearing from ClickMeeting without anyone deleting them
 on purpose.
@@ -23,6 +23,14 @@ on purpose.
   failed indefinitely and the activity could never be removed from the course.
 - **Access tokens are removed with their activity.** They identify participants and were
   being left behind in the database.
+- **Restoring or duplicating an activity books a new room.** The backup carried the room id
+  over verbatim, so the copy drove the very same ClickMeeting room as the original. Restore
+  now creates a fresh room through the API, owned by whoever runs the restore, with a newly
+  generated password. Backups made before this release carry no room type and fall back to
+  a webinar.
+- **Editing an activity updates the room in ClickMeeting.** Renaming or rescheduling an
+  activity sent an empty request to the API, so nothing changed on the ClickMeeting side and
+  no error was shown. The edited values are now sent.
 
 ### Added
 
